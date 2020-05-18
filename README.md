@@ -4,8 +4,9 @@
 python3 -m pip install -r requirements.txt
 
 ## Usage
+```
 python3 network_invsync.py -i {ISE Admin Node FQDN}
-
+```
 A JSON file is loaded from *../network_confg/ise_svc-net-auto.json*
 
 Expected format is:
