@@ -1,4 +1,4 @@
-# Network InvSync - Verify ISE and YAML inventory are synchronized.
+# Network InvSync - Verify ISE and YAML inventory are synchronised.
 
 ## Requirements
 python3 -m pip install -r requirements.txt
