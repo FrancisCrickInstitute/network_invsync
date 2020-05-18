@@ -9,9 +9,11 @@ python3 network_invsync.py -i {ISE Admin Node FQDN}
 A ise_svc-net-auto.json file is loaded from ../network_confg/
 Expected format is:
 
+>
 > {
 >     "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
 > }
+>
 
 dXNlcm5hbWU6cGFzc3dvcmQ= is a Base64 encoding of string username:password
 
