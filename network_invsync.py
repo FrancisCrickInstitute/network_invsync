@@ -1,7 +1,7 @@
 '''
 Network InvSync - Verify ISE and YAML inventory are synchronized.
 
-Requirements:
+REQUIRMENTS:
 $ python3 -m pip install -r requirements.txt
 
 A ise_svc-net-auto.json file is loaded from ../network_confg/
@@ -9,10 +9,10 @@ Update ise_cfg_file VAR as required. Expected format is:
 {
     "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
 }
-dXNlcm5hbWU6cGFzc3dvcmQ= is a Base64 encoding of literal string username:password
+dXNlcm5hbWU6cGFzc3dvcmQ= is a Base64 encoding of string username:password
 
-Usage:
-$ python3 network_invsync.py
+USAGE:
+$ python3 network_invsync.py -i {ISE Admin Node FQDN}
 '''
 #!/usr/bin/env python3
 
@@ -23,7 +23,7 @@ import requests # Required for API POST
 import xmltodict # Requird to convert POST XML response to DICT
 import pprint # Optional to Pretty Print Responses
 import json # Required to process *.json ISE config file
-import urllib3
+import urllib3 # Required to disable SSL Warnings
 import ipdb # Optional Debug. ipdb.set_trace()
 
 from argparse import ArgumentParser # Required for Command Line Argument parsing
