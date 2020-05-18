@@ -6,7 +6,7 @@ python3 -m pip install -r requirements.txt
 ## Usage
 python3 network_invsync.py -i {ISE Admin Node FQDN}
 
-A ise_svc-net-auto.json file is loaded from ../network_confg/
+A JSON file is loaded from *../network_confg/ise_svc-net-auto.json*
 
 Expected format is:
 
@@ -16,8 +16,7 @@ Expected format is:
 }
 ```
 
-
-dXNlcm5hbWU6cGFzc3dvcmQ= is a Base64 encoding of string username:password
+*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of string *username:password*
 
 ## Change History
 
