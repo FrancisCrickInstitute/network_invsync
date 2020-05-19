@@ -5,7 +5,7 @@ REQUIRMENTS:
 $ python3 -m pip install -r requirements.txt
 
 A JSON file is loaded from *../network_confg/ise_ers.json
-Update ise_cfg_file VAR @ line 39'ish as required. Expected format is:
+Update ise_cfg_file VAR @ line 42'ish as required. Expected format is:
 {
     "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
     "PATTERN": [{"TYPE": "example-1"}, {"TYPE": "example-2"}]
