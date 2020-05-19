@@ -6,6 +6,8 @@ Python3 Script to Identify Differences Between Two Lists
 __author__ = 'Paul Mahan, Francis Crick Institute, London UK'
 __copyright__ = 'None. Enjoy :-)'
 
+import ipdb # Optional Debug. ipdb.set_trace()
+
 def diff(listA, listB):
     '''
     DIFF Function See 'https://www.geeksforgeeks.org/python-set-difference/'

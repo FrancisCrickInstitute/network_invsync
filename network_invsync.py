@@ -4,12 +4,15 @@ Network InvSync - Verify ISE and YAML inventory are synchronized.
 REQUIRMENTS:
 $ python3 -m pip install -r requirements.txt
 
-A ise_svc-net-auto.json file is loaded from ../network_confg/
-Update ise_cfg_file VAR @ line 39 as required. Expected format is:
+A JSON file is loaded from *../network_confg/ise_ers.json
+Update ise_cfg_file VAR @ line 39'ish as required. Expected format is:
 {
-    "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+    "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+    "PATTERN": [{"TYPE": "example-1"}, {"TYPE": "example-2"}]
 }
+...where
 dXNlcm5hbWU6cGFzc3dvcmQ= is a Base64 encoding of string username:password
+PATTERN: is the Device Type Pattern(s) you want to filter on
 
 USAGE:
 $ python3 network_invsync.py -i {ISE Admin Node FQDN}
@@ -36,7 +39,7 @@ from modules._network_diffgen import diffgen
 
 # Define Objects
 pp = pprint.PrettyPrinter(indent=4)
-ise_cfg_file = '../network_config/ise_svc-net-auto.json'
+ise_cfg_file = '../network_config/ise_ers.json'
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -71,22 +74,36 @@ def main():
       'Authorization': OAUTH
     }
 
-    # Define POST request URI
-    url = "https://" + str(ISENODE) + ":9060/ers/config/networkdevice"
+    # Define POST request URI.
+    # Truely herendous hack due to Cisco ISE page size limitation of 100 results!!!
+    # If you have more than 100 devices you need two posts to accomodate each page.
+    # Also, by default ISE has a max size of 20 so this needs to be increased to
+    # max 100: ?size=100&page=* where * is a page number.
+    # Without this, ERS returns a max of 20 nodes (why Cisco?).
+    # See: https://community.cisco.com/t5/network-access-control/ers-returns-max-20-endpoints/m-p/3499483
 
-    # POST GET Response. User verify=False to disable SSL wanrings
-    response = requests.request("GET", url, headers=headers, data = payload, verify=False)
+    xdoc = [] # Reset
 
-    # pp.pprint(response.text.encode('utf8'))
+    MAX_PAGES = 2
 
-    # Convert to Python Dict {}
-    xdoc = xmltodict.parse(response.text.encode('utf8'))
+    for p in range(MAX_PAGES):
+
+        url = "https://" + str(ISENODE) + ":9060/ers/config/networkdevice?size=100&page=" + str(p+1)
+
+        # POST GET Response. User verify=False to disable SSL wanrings
+        response = requests.request("GET", url, headers=headers, data=payload, verify=False)
+
+        # Convert to Python Dict {} and append to xdoc []
+        xdoc.append(xmltodict.parse(response.text.encode('utf8')))
+
+    # print(pp.pprint(xdoc))
 
     # Parse through XTVAL module to extract required values
     ids = xtval(xdoc, '@id')
     hosts = xtval(xdoc, '@name')
 
-    # Generate ISE ilist []
+    xdoc = [] # Reset
+
     i = 0
     for id in ids:
         url = "https://" + str(ISENODE) + ":9060/ers/config/networkdevice/" + id
@@ -100,11 +117,9 @@ def main():
         # ise_setting JSON structure.
         PATTERN = ise_settings["PATTERN"]
 
-        x = 0
         for p in PATTERN:
             if str(xdoc).find(str(p['TYPE'])) != -1:
                 ilist.append (hosts[i])
-                x += 1
 
         i += 1
 
@@ -125,9 +140,9 @@ def main():
 
     idiff, ydiff = diffgen(ilist, ylist)
 
-    print('\n** Configured on ISE but not in YAML:')
-    print(idiff)
     print('\n** Configured in YAML but not on ISE:')
+    print(idiff)
+    print('\n** Configured in ISE but not in YAML:')
     print(ydiff)
 
 if __name__ == "__main__":

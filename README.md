@@ -9,13 +9,14 @@ python3 -m pip install -r requirements.txt
 ```
 python3 network_invsync.py -i {ISE Admin Node FQDN}
 ```
-A JSON file is loaded from *../network_confg/ise_svc-net-auto.json*
+A JSON file is loaded from *../network_confg/ise_ers.json*
 
 Expected format is:
 
 ```
 {
-     "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+     "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+     "PATTERN": [{"TYPE": "example-1"}, {"TYPE": "example-2"}]
 }
 ```
 
@@ -30,4 +31,7 @@ Expected format is:
 - Updated README.md
 
 ### Version 19.05.2020
-- Support ISE Device Type filtering. 
+- Support ISE Device Type filtering.
+
+### Version 19.05.2020_2
+- Hack to work with ISE paging limitations. Cleanup required!
