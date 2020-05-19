@@ -140,9 +140,9 @@ def main():
 
     idiff, ydiff = diffgen(ilist, ylist)
 
-    print('\n** Configured in YAML but not on ISE:')
+    print('\n** Configured on ISE but not in YAML:')
     print(idiff)
-    print('\n** Configured in ISE but not in YAML:')
+    print('\n** Configured in YAML but not on ISE:')
     print(ydiff)
 
 if __name__ == "__main__":
