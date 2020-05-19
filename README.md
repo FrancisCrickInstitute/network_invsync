@@ -28,3 +28,6 @@ Expected format is:
 
 ### Version 18.05.2020_2
 - Updated README.md
+
+### Version 19.05.2020
+- Support ISE Device Type filtering. 

@@ -5,7 +5,7 @@ REQUIRMENTS:
 $ python3 -m pip install -r requirements.txt
 
 A ise_svc-net-auto.json file is loaded from ../network_confg/
-Update ise_cfg_file VAR as required. Expected format is:
+Update ise_cfg_file VAR @ line 39 as required. Expected format is:
 {
     "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
 }
@@ -46,7 +46,7 @@ def main():
     # Process Command Line Argument
     parser = ArgumentParser(description='Usage:')
     parser.add_argument('-i', '--ise', type=str, required=True,
-                        help='ISE Admin Node FQDM')
+                        help='ISE Admin Node FQDN')
     arg = parser.parse_args()
 
     ISENODE = arg.ise
@@ -57,7 +57,10 @@ def main():
 
     OAUTH = ise_settings["OAUTH"]
 
+    # ##########################################################################
     # GET ISE Host List and save to ilist = []
+    # ##########################################################################
+
     ilist = []
 
     # Define Global API POST request values
@@ -86,10 +89,29 @@ def main():
     # Generate ISE ilist []
     i = 0
     for id in ids:
-        ilist.append (hosts[i])
+        url = "https://" + str(ISENODE) + ":9060/ers/config/networkdevice/" + id
+
+        response = requests.request("GET", url, headers=headers, data = payload, verify=False)
+
+        xdoc = xmltodict.parse(response.text.encode('utf8'))
+
+        # The xdoc Dict is a structure of non-indexable OrderedDicts within OrderedDicts
+        # Not very pretty. As such, all we can do is dirty find using the PATTERN in
+        # ise_setting JSON structure.
+        PATTERN = ise_settings["PATTERN"]
+
+        x = 0
+        for p in PATTERN:
+            if str(xdoc).find(str(p['TYPE'])) != -1:
+                ilist.append (hosts[i])
+                x += 1
+
         i += 1
 
+    # ##########################################################################
     # GET YAML Host Lsit and save to ylist[]
+    # ##########################################################################
+
     ylist = []
 
     nr = InitNornir(config_file='config.yaml')
@@ -97,7 +119,10 @@ def main():
     for i in filter.inventory.hosts.keys():
         ylist.append(i)
 
+    # ##########################################################################
     # DIFF
+    # ##########################################################################
+
     idiff, ydiff = diffgen(ilist, ylist)
 
     print('\n** Configured on ISE but not in YAML:')
