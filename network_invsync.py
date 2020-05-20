@@ -38,13 +38,15 @@ from modules._network_xtval import xtval
 from modules._network_diffgen import diffgen
 
 # Define Objects
-pp = pprint.PrettyPrinter(indent=4)
+pp = pprint.PrettyPrinter()
 ise_cfg_file = '../network_config/ise_ers.json'
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def main():
     ''' MAIN FUNCTION '''
+
+    print('\nQuerying ISE & YAML. Please Wait...')
 
     # Process Command Line Argument
     parser = ArgumentParser(description='Usage:')
@@ -141,9 +143,10 @@ def main():
     idiff, ydiff = diffgen(ilist, ylist)
 
     print('\n** Configured on ISE but not in YAML:')
-    print(idiff)
+    pp.pprint(idiff)
     print('\n** Configured in YAML but not on ISE:')
-    print(ydiff)
+    pp.pprint(ydiff)
+    print('\n')
 
 if __name__ == "__main__":
     main()

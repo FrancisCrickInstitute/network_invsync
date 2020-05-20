@@ -35,3 +35,6 @@ Expected format is:
 
 ### Version 19.05.2020_2
 - Hack to work with ISE paging limitations. Cleanup required!
+
+### Version 20.05.2020
+- Minor improvements to print output
