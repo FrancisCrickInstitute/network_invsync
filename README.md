@@ -38,3 +38,6 @@ Expected format is:
 
 ### Version 20.05.2020
 - Minor improvements to print output
+
+### Version 22.05.2020
+- Redesigned to search ISE hosts on PATTERN extracted from ise_ers.json as ISE TYPE is to vague in our deployment.

@@ -8,11 +8,13 @@ A JSON file is loaded from *../network_confg/ise_ers.json
 Update ise_cfg_file VAR @ line 42'ish as required. Expected format is:
 {
     "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
-    "PATTERN": [{"TYPE": "example-1"}, {"TYPE": "example-2"}]
+    "iPATTERN": ["A", "B", "C"],
+    "xPATTERN": ["X", "Y", "Z"],
 }
 ...where
-dXNlcm5hbWU6cGFzc3dvcmQ= is a Base64 encoding of string username:password
-PATTERN: is the Device Type Pattern(s) you want to filter on
+dXNlcm5hbWU6cGFzc3dvcmQ= is a Base64 encoding of string "username:password"
+iPATTERN: is the host name pattern we want to match
+xPATTERN: is the host name pattern we want to exclude
 
 USAGE:
 $ python3 network_invsync.py -i {ISE Admin Node FQDN}
@@ -38,7 +40,7 @@ from modules._network_xtval import xtval
 from modules._network_diffgen import diffgen
 
 # Define Objects
-pp = pprint.PrettyPrinter()
+PP = pprint.PrettyPrinter()
 ise_cfg_file = '../network_config/ise_ers.json'
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -61,6 +63,8 @@ def main():
         ise_settings = json.load(ise_f)
 
     OAUTH = ise_settings["OAUTH"]
+    iPATTERN = ise_settings["iPATTERN"] # Include Pattern
+    xPATTERN = ise_settings["xPATTERN"] # Exclude Pattern
 
     # ##########################################################################
     # GET ISE Host List and save to ilist = []
@@ -86,7 +90,7 @@ def main():
 
     xdoc = [] # Reset
 
-    MAX_PAGES = 2
+    MAX_PAGES = 10
 
     for p in range(MAX_PAGES):
 
@@ -104,26 +108,12 @@ def main():
     ids = xtval(xdoc, '@id')
     hosts = xtval(xdoc, '@name')
 
-    xdoc = [] # Reset
+    # Loop through hosts. If host name contains iPATTERN and not xPATTERN append
+    # to ilist
+    for host in hosts:
+        if any(iPAT in host for iPAT in iPATTERN) and not any(xPAT in host for xPAT in xPATTERN):
+            ilist.append(host)
 
-    i = 0
-    for id in ids:
-        url = "https://" + str(ISENODE) + ":9060/ers/config/networkdevice/" + id
-
-        response = requests.request("GET", url, headers=headers, data = payload, verify=False)
-
-        xdoc = xmltodict.parse(response.text.encode('utf8'))
-
-        # The xdoc Dict is a structure of non-indexable OrderedDicts within OrderedDicts
-        # Not very pretty. As such, all we can do is dirty find using the PATTERN in
-        # ise_setting JSON structure.
-        PATTERN = ise_settings["PATTERN"]
-
-        for p in PATTERN:
-            if str(xdoc).find(str(p['TYPE'])) != -1:
-                ilist.append (hosts[i])
-
-        i += 1
 
     # ##########################################################################
     # GET YAML Host Lsit and save to ylist[]
@@ -143,9 +133,9 @@ def main():
     idiff, ydiff = diffgen(ilist, ylist)
 
     print('\n** Configured on ISE but not in YAML:')
-    pp.pprint(idiff)
+    PP.pprint(idiff)
     print('\n** Configured in YAML but not on ISE:')
-    pp.pprint(ydiff)
+    PP.pprint(ydiff)
     print('\n')
 
 if __name__ == "__main__":
