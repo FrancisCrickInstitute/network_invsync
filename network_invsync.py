@@ -13,8 +13,8 @@ Update ise_cfg_file VAR @ line 42'ish as required. Expected format is:
 }
 ...where
 dXNlcm5hbWU6cGFzc3dvcmQ= is a Base64 encoding of string "username:password"
-iPATTERN: is the host name pattern we want to match
-xPATTERN: is the host name pattern we want to exclude
+iPATTERN: is the host name pattern to match
+xPATTERN: is the host name pattern to exclude
 
 USAGE:
 $ python3 network_invsync.py -i {ISE Admin Node FQDN}
@@ -27,8 +27,11 @@ __copyright__ = 'None. Enjoy :-)'
 import requests # Required for API POST
 import xmltodict # Requird to convert POST XML response to DICT
 import pprint # Optional to Pretty Print Responses
-import json # Required to process *.json ISE config file
+import json # Required to process *.json ISE config file and Slack Posting
+import slack # Required for Slack Post. NOTE: 'pip install slackclient'
+import ssl # Required for Slack Post.
 import urllib3 # Required to disable SSL Warnings
+import time # Require for requests delay function
 import ipdb # Optional Debug. ipdb.set_trace()
 
 from argparse import ArgumentParser # Required for Command Line Argument parsing
@@ -44,6 +47,56 @@ PP = pprint.PrettyPrinter()
 ise_cfg_file = '../network_config/ise_ers.json'
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+SLACK_LOG = []
+
+def slackpost(SLACK_LOG):
+    ''' Post to Slack Function '''
+
+    try:
+        # Comment out:
+        #
+        # for line in SLACK_LOG:
+        #    post_to_slack(line)
+        #
+        # At the end of the main function to disable!
+
+        # Build our message_string to post to Slack
+        message_string = ""
+
+        for line in SLACK_LOG:
+            message_string += str(line)
+            message_string += '\n'
+
+        # Build our JSON payload to post to Slack
+        message_data = []
+        message_data.append({"type": "section", "text": {"type": "mrkdwn", "text": message_string}})
+
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+
+        # Read *.json config for required tokens
+        with open("../network_config/slack_network_auto.json") as slack_f:
+            slack_settings = json.load(slack_f)
+
+        OATH = slack_settings["OAUTH_TOKEN"]
+        SLACKCHANNEL = slack_settings["CHANNEL"]
+
+        # Establish Slack Web Client
+        client = slack.WebClient(token=OATH, ssl=ssl_context)
+
+        # Post slack_msg to Slack Channel
+        client.chat_postMessage(
+            channel=SLACKCHANNEL,
+            blocks=message_data)
+
+        slackpost_status = True
+
+    except:
+        slackpost_status = False
+
+    return slackpost_status
 
 def main():
     ''' MAIN FUNCTION '''
@@ -77,7 +130,8 @@ def main():
     headers = {
       'Accept': 'application/vnd.com.cisco.ise.network.networkdevice.1.1+xml',
       'Accept-Search-Result': 'application/vnd.com.cisco.ise.ers.searchresult.2.0+xm',
-      'Authorization': OAUTH
+      'Authorization': OAUTH,
+      'cache-control': 'no-cache'
     }
 
     # Define POST request URI.
@@ -88,24 +142,34 @@ def main():
     # Without this, ERS returns a max of 20 nodes (why Cisco?).
     # See: https://community.cisco.com/t5/network-access-control/ers-returns-max-20-endpoints/m-p/3499483
 
-    xdoc = [] # Reset
+    xdoc = []
 
-    MAX_PAGES = 10
+    MAX_PAGES = 2
 
-    for p in range(MAX_PAGES):
+    for page in range(MAX_PAGES):
 
-        url = "https://" + str(ISENODE) + ":9060/ers/config/networkdevice?size=100&page=" + str(p+1)
+        url = "https://" + str(ISENODE) + ":9060/ers/config/networkdevice?size=100&page=" + str(page+1)
 
         # POST GET Response. User verify=False to disable SSL wanrings
         response = requests.request("GET", url, headers=headers, data=payload, verify=False)
 
+        # Curiosity with ISE and occasional polling where it returns 401. Retry
+        # but with delay
+
+        if response.status_code == 200:
+            pass
+
+        if response.status_code == 401:
+            time.sleep(5)
+            response = requests.request("GET", url, headers=headers, data=payload, verify=False)
+
         # Convert to Python Dict {} and append to xdoc []
         xdoc.append(xmltodict.parse(response.text.encode('utf8')))
 
-    # print(pp.pprint(xdoc))
+    # print(PP.pprint(xdoc))
 
     # Parse through XTVAL module to extract required values
-    ids = xtval(xdoc, '@id')
+    # ids = xtval(xdoc, '@id')
     hosts = xtval(xdoc, '@name')
 
     # Loop through hosts. If host name contains iPATTERN and not xPATTERN append
@@ -132,11 +196,22 @@ def main():
 
     idiff, ydiff = diffgen(ilist, ylist)
 
-    print('\n** Configured on ISE but not in YAML:')
-    PP.pprint(idiff)
-    print('\n** Configured in YAML but not on ISE:')
-    PP.pprint(ydiff)
-    print('\n')
+    # WRITE SLACK_LOG to slackpost() function for processing
+    SLACK_LOG.append('Network InvSync Script Results...')
+    if idiff:
+        SLACK_LOG.append('\n** Configured on ISE but not in YAML:')
+        for i in idiff:
+            SLACK_LOG.append(i)
+    if ydiff:
+        SLACK_LOG.append('\n** Configured in YAML but not on ISE:')
+        for y in ydiff:
+            SLACK_LOG.append(y)
+
+    if not idiff and not ydiff:
+        SLACK_LOG.append('\n** No Difference Found ' u'\u2714')
+
+    print(SLACK_LOG)
+    slackpost_status = slackpost(SLACK_LOG)
 
 if __name__ == "__main__":
     main()

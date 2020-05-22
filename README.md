@@ -15,12 +15,15 @@ Expected format is:
 
 ```
 {
-     "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
-     "PATTERN": [{"TYPE": "example-1"}, {"TYPE": "example-2"}]
+    "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+    "iPATTERN": ["A", "B", "C"],
+    "xPATTERN": ["X", "Y", "Z"],
 }
 ```
 
 *dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of string *username:password*
+*iPATTERN is the host name pattern to match
+*xPATTERN is the host name pattern to exclude
 
 ## Change History
 
@@ -41,3 +44,6 @@ Expected format is:
 
 ### Version 22.05.2020
 - Redesigned to search ISE hosts on PATTERN extracted from ise_ers.json as ISE TYPE is to vague in our deployment.
+
+### Version 22.05.2020_2
+- Added Slack Posting
