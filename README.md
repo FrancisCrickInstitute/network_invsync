@@ -25,17 +25,6 @@ $
 ```
 - Expectation is there is a *config.yaml* in the working directory [1]. This is used by NORNIR to build a list of hosts given a *-y* CLI argument. It references the .yaml files in *network_inventory* [2] folder. The file also defines the number of concurrent connections supported.
 
-- Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [3] file in *network_config* folder. This defines the OAUTH token and CHANNEL required to post to your Slack environment. Expected format is:
-
-```
-{
-  "OAUTH_TOKEN": "<REMOVED>",
-  "WEBHOOK": "https://hooks.slack.com/services/<REMOVED>",
-  "USE_WEBHOOK": 0,
-  "CHANNEL": <SLACK CHANNEL>"
-}
-```
-
 - An ISE configuration file is loaded from *ise_ers.json* [4]. Expected format is:
 
 ```
@@ -51,10 +40,20 @@ $
 *iPATTERN* is the host name pattern to match<br />
 *xPATTERN* is the host name pattern to exclude<br />
 
+- Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [3] file in *network_config* folder. This defines the OAUTH token and CHANNEL required to post to your Slack environment. Expected format is:
+
+```
+{
+  "OAUTH_TOKEN": "<REMOVED>",
+  "WEBHOOK": "https://hooks.slack.com/services/<REMOVED>",
+  "USE_WEBHOOK": 0,
+  "CHANNEL": <SLACK CHANNEL>"
+}
+```
 
 ## Usage
 ```
-python3 network_invsync.py -i {ISE PSN DNS}
+python3 network_invsync.py -i {ISE PSN DNS} -s [OPTIONAL]
 ```
 
 ## To-Do
