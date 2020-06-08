@@ -25,7 +25,7 @@ $
 ```
 - Expectation is there is a *config.yaml* in the working directory [1]. This is used by NORNIR to build a list of hosts given a *-y* CLI argument. It references the .yaml files in *network_inventory* [2] folder and also defines the number of concurrent connections.
 
-- Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [3] file in *network_config* folder. This defines the OAUTH token and CHANNEL required to post to your Slack environment.
+- Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [3] file in *network_config* folder. This defines the OAUTH token and CHANNEL required to post to your Slack environment. Expected format is:
 
 ```
 {
@@ -36,7 +36,7 @@ $
 }
 ```
 
-- A ISE configuration file is loaded from *../network_confg/ise_ers.json*. Expected format is:
+- An ISE configuration file is loaded from *ise_ers.json* [4]. Expected format is:
 
 ```
 {
@@ -47,7 +47,7 @@ $
 ```
 
 ... where:<br />
-*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of string *username:password*<br />
+*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. Go to https://www.base64encode.org/<br />
 *iPATTERN* is the host name pattern to match<br />
 *xPATTERN* is the host name pattern to exclude<br />
 
