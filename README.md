@@ -1,6 +1,6 @@
 # Network InvSync Python Script - Verify ISE and YAML Inventories are Synchronised
 
-network_wrmem.py uses a NAPALM & NetMiko Task to commit the command 'copy running-config startup-config' to Network nodes defined in the -y CLI argument. The -y argument accepts either a YAML host or group argument.
+*network_invsync.py* uses an ISE API request to get a list of Network Devices. It also uses NORNIR to get a list of Network Devices configured in the YAML Inventory. A Python DIFF operations is used to compare the lists and post the differences to Slack.
 
 ## Requirements
 ```
@@ -23,9 +23,9 @@ $
 │   ├── slack_network_auto.json[3]
 │   ├── ise_ers.json[4]
 ```
-- Expectation is there is a config.yaml in the working directory [1]. This is used by NORNIR to build a list of hosts given a -y CLI argument. It references the .yaml files in network_inventory [2] folder and also defines the number of concurrent connections.
+- Expectation is there is a *config.yaml* in the working directory [1]. This is used by NORNIR to build a list of hosts given a *-y* CLI argument. It references the .yaml files in *network_inventory* [2] folder and also defines the number of concurrent connections.
 
-- Where the -s (Post-to-Slack) CLI argument is passed, expectation is there is a slack_network_auto.json [3] file in network_config folder. This defines the OAUTH token and CHANNEL required to post to Slack.
+- Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [3] file in *network_config* folder. This defines the OAUTH token and CHANNEL required to post to your Slack environment.
 
 ```
 {
@@ -36,7 +36,7 @@ $
 }
 ```
 
-- A JSON file is loaded from *../network_confg/ise_ers.json*. Expected format is:
+- A ISE configuration file is loaded from *../network_confg/ise_ers.json*. Expected format is:
 
 ```
 {
@@ -48,8 +48,8 @@ $
 
 ... where:<br />
 *dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of string *username:password*<br />
-iPATTERN is the host name pattern to match<br />
-xPATTERN is the host name pattern to exclude<br />
+*iPATTERN* is the host name pattern to match<br />
+*xPATTERN* is the host name pattern to exclude<br />
 
 
 ## Usage

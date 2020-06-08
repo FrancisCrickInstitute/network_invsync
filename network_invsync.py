@@ -1,23 +1,5 @@
 '''
-Network InvSync - Verify ISE and YAML inventory are synchronized.
-
-REQUIRMENTS:
-$ python3 -m pip install -r requirements.txt
-
-A JSON file is loaded from *../network_confg/ise_ers.json
-Update ise_cfg_file VAR @ line 42'ish as required. Expected format is:
-{
-    "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
-    "iPATTERN": ["A", "B", "C"],
-    "xPATTERN": ["X", "Y", "Z"],
-}
-...where
-dXNlcm5hbWU6cGFzc3dvcmQ= is a Base64 encoding of string "username:password"
-iPATTERN: is the host name pattern to match
-xPATTERN: is the host name pattern to exclude
-
-USAGE:
-$ python3 network_invsync.py -i {ISE Admin Node FQDN}
+Network InvSync Python Script - Verify ISE and YAML Inventories are Synchronized.
 '''
 #!/usr/bin/env python3
 
