@@ -47,3 +47,6 @@ Expected format is:
 
 ### Version 22.05.2020_2
 - Added Slack Posting
+
+### Version 08.06.2020
+- Minor Slack post cleanup.

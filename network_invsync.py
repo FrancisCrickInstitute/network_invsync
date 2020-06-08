@@ -208,7 +208,7 @@ def main():
             SLACK_LOG.append(y)
 
     if not idiff and not ydiff:
-        SLACK_LOG.append('\n** No Difference Found ' u'\u2714')
+        SLACK_LOG.append('\n** No Difference Found Between YAML and ISE Inventory ' + u'\u2714')
 
     print(SLACK_LOG)
     slackpost_status = slackpost(SLACK_LOG)
