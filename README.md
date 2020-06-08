@@ -23,7 +23,7 @@ $
 │   ├── slack_network_auto.json[3]
 │   ├── ise_ers.json[4]
 ```
-- Expectation is there is a *config.yaml* in the working directory [1]. This is used by NORNIR to build a list of hosts given a *-y* CLI argument. It references the .yaml files in *network_inventory* [2] folder and also defines the number of concurrent connections.
+- Expectation is there is a *config.yaml* in the working directory [1]. This is used by NORNIR to build a list of hosts given a *-y* CLI argument. It references the .yaml files in *network_inventory* [2] folder. The file also defines the number of concurrent connections supported.
 
 - Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [3] file in *network_config* folder. This defines the OAUTH token and CHANNEL required to post to your Slack environment. Expected format is:
 
@@ -58,7 +58,7 @@ python3 network_invsync.py -i {ISE PSN DNS}
 ```
 
 ## To-Do
--
+n/a
 
 
 ## Change History
