@@ -1,17 +1,42 @@
-# Network InvSync - Verify ISE and YAML inventory are synchronised.
+# Network InvSync Python Script - Verify ISE and YAML Inventories are Synchronised
+
+network_wrmem.py uses a NAPALM & NetMiko Task to commit the command 'copy running-config startup-config' to Network nodes defined in the -y CLI argument. The -y argument accepts either a YAML host or group argument.
 
 ## Requirements
 ```
 python3 -m pip install -r requirements.txt
 ```
 
-## Usage
+Expected folder structure is:
 ```
-python3 network_invsync.py -i {ISE Admin Node FQDN}
+$
+.
+├── network_invsync
+│   ├── network_invsync.py
+│   ├── config.yaml [1]
+│   ├── README.md [THIS README]
+├── network_inventory [2]
+│   ├── groups.yaml
+│   ├── hosts.yaml
+│   ├── defaults.yaml
+├── network_config
+│   ├── slack_network_auto.json[3]
+│   ├── ise_ers.json[4]
 ```
-A JSON file is loaded from *../network_confg/ise_ers.json*
+- Expectation is there is a config.yaml in the working directory [1]. This is used by Nornir to build a list of hosts given a -y CLI argument. It references the .yaml files in network_inventory [2] folder and also defines the number of concurrent connections.
 
-Expected format is:
+- Where the -s (Post-to-Slack) CLI argument is passed, expectation is there is a slack_network_auto.json [3] file in network_config folder. The defines the OAUTH token and CHANNEL required to post to Slack.
+
+```
+{
+  "OAUTH_TOKEN": "<REMOVED>",
+  "WEBHOOK": "https://hooks.slack.com/services/<REMOVED>",
+  "USE_WEBHOOK": 0,
+  "CHANNEL": <SLACK CHANNEL>"
+}
+```
+
+- A JSON file is loaded from *../network_confg/ise_ers.json*. Expected format is:
 
 ```
 {
@@ -21,9 +46,20 @@ Expected format is:
 }
 ```
 
+... where:
 *dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of string *username:password*
 *iPATTERN is the host name pattern to match
 *xPATTERN is the host name pattern to exclude
+
+
+## Usage
+```
+python3 network_invsync.py -i {ISE PSN DNS}
+```
+
+## To-Do
+-
+
 
 ## Change History
 
@@ -50,3 +86,6 @@ Expected format is:
 
 ### Version 08.06.2020
 - Minor Slack post cleanup.
+
+### VERSION 08.06.2020
+- Updated README.md
