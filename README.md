@@ -46,10 +46,10 @@ $
 }
 ```
 
-... where:
+... where:<br />
 *dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of string *username:password*<br />
-*iPATTERN is the host name pattern to match<br />
-*xPATTERN is the host name pattern to exclude<br />
+iPATTERN is the host name pattern to match<br />
+xPATTERN is the host name pattern to exclude<br />
 
 
 ## Usage
