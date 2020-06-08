@@ -23,9 +23,9 @@ $
 │   ├── slack_network_auto.json[3]
 │   ├── ise_ers.json[4]
 ```
-- Expectation is there is a config.yaml in the working directory [1]. This is used by Nornir to build a list of hosts given a -y CLI argument. It references the .yaml files in network_inventory [2] folder and also defines the number of concurrent connections.
+- Expectation is there is a config.yaml in the working directory [1]. This is used by NORNIR to build a list of hosts given a -y CLI argument. It references the .yaml files in network_inventory [2] folder and also defines the number of concurrent connections.
 
-- Where the -s (Post-to-Slack) CLI argument is passed, expectation is there is a slack_network_auto.json [3] file in network_config folder. The defines the OAUTH token and CHANNEL required to post to Slack.
+- Where the -s (Post-to-Slack) CLI argument is passed, expectation is there is a slack_network_auto.json [3] file in network_config folder. This defines the OAUTH token and CHANNEL required to post to Slack.
 
 ```
 {
@@ -47,9 +47,9 @@ $
 ```
 
 ... where:
-*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of string *username:password*
-*iPATTERN is the host name pattern to match
-*xPATTERN is the host name pattern to exclude
+*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of string *username:password*<br />
+*iPATTERN is the host name pattern to match<br />
+*xPATTERN is the host name pattern to exclude<br />
 
 
 ## Usage
