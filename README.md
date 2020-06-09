@@ -59,13 +59,7 @@ $
 ```
 
 ... where:<br />
-
-message = "username:password"
-message_bytes = message.encode('ascii')
-base64_bytes = base64.b64encode(message_bytes)
-#base64_message = base64_bytes.decode('ascii')
-
-*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. To generate valid ISE ERS Credentials, in Python interpreter type:
+*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. To generate valid ISE ERS Credentials, in Python interpreter type the following and replace username and password as required:
 
 ```
 >>> message = "username:password"
