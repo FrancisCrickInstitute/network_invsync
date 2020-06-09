@@ -2,6 +2,13 @@
 
 *network_invsync.py* uses an ISE API request to get a list of Network Devices. It also uses NORNIR to get a list of Network Devices configured in the YAML Inventory. A Python DIFF operations is used to compare the lists and post the differences to Slack.
 
+
+## Usage
+```
+python3 network_invsync.py -i {ISE PSN DNS} -s [OPTIONAL]
+```
+
+
 ## Requirements
 ```
 python3 -m pip install -r requirements.txt
@@ -51,14 +58,6 @@ $
   "CHANNEL": <SLACK CHANNEL>"
 }
 ```
-
-## Usage
-```
-python3 network_invsync.py -i {ISE PSN DNS} -s [OPTIONAL]
-```
-
-## To-Do
-n/a
 
 
 ## Change History
