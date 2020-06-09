@@ -20,20 +20,20 @@ $
 .
 ├── network_invsync
 │   ├── network_invsync.py
-│   ├── config.yaml [1]
+│   ├── pattern.json [1]
+│   ├── config.yaml [2]
 │   ├── README.md [THIS README]
-├── network_inventory [2]
+├── network_inventory [3]
 │   ├── groups.yaml
 │   ├── hosts.yaml
 │   ├── defaults.yaml
 ├── network_config
-│   ├── ise_ers.json [3]
-│   ├── slack_network_auto.json [4]
+│   ├── ise_ers.json [4]
+│   ├── slack_network_auto.json [5]
 
 ```
-- Expectation is there is a *config.yaml* in the working directory [1]. This is used by NORNIR to build a list of hosts given a *-y* CLI argument. It references the .yaml files in *network_inventory* [2] folder. The file also defines the number of concurrent connections supported.
 
-- An ISE configuration file is loaded from *ise_ers.json* [3]. Expected format is:
+- A Pattern JSON Configuration file is loaded from *pattern.json* [1]. Expected format is:
 
 ```
 {
@@ -43,12 +43,25 @@ $
 }
 ```
 
-... where:<br />
-*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. Go to https://www.base64encode.org/<br />
+... where:
 *iPATTERN* is the a pattern to include (i.e. ["A", "B", "C"] will match Router-A, Router-B, Router-C) and add to the list to be DIFF'ed.<br />
 *xPATTERN* is the a pattern to exclude (i.e. ["X", "Y", "Z"] will match Router-X, Router-Y, Router-Z) and NOT add to the list to be DIFF'ed.<br />
 
-- Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [4] file in *network_config* folder. This defines the OAUTH token and CHANNEL required to post to your Slack environment. Expected format is:
+
+- A YAML Configuration file is loaded *config.yaml* in the working directory [2]. This is used by NORNIR to build a list of hosts given a *-y* CLI argument. It references the .yaml files in *network_inventory* [3] folder. The file also defines the number of concurrent connections supported.
+
+- An ISE ERS JSON Configuration file is loaded from *ise_ers.json* [4]. Expected format is:
+
+```
+{
+    "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+}
+```
+
+... where:<br />
+*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. Go to https://www.base64encode.org/<br />
+
+- Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [5] file in *network_config* folder. This defines the OAUTH_TOKEN and CHANNEL required to post to your Slack environment. Expected format is:
 
 ```
 {
@@ -86,5 +99,9 @@ $
 ### Version 08.06.2020
 - Minor Slack post cleanup.
 
-### VERSION 08.06.2020
+### Version 08.06.2020
+- Updated README.md
+
+### Version 09.06.2020
+- Split Pattern and ISE Configuration into two separate files.
 - Updated README.md

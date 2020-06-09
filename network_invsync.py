@@ -24,9 +24,12 @@ from nornir.core.filter import F
 from modules._network_xtval import xtval
 from modules._network_diffgen import diffgen
 
-# Define Objects
 PP = pprint.PrettyPrinter()
-ise_cfg_file = '../network_config/ise_ers.json'
+
+# Define File Locations...
+ise_ers_cfg_f = '../network_config/ise_ers.json' # ISE ERS Config File. Includes Base64 OAUTH.
+slack_cfg_f = '../network_config/slack_network_auto.json' # Slack Post Config File.
+pattern_f = 'pattern.json' # Pattern File used in DIFF operation
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -59,14 +62,14 @@ def slackpost(SLACK_LOG):
         ssl_context.verify_mode = ssl.CERT_NONE
 
         # Read *.json config for required tokens
-        with open("../network_config/slack_network_auto.json") as slack_f:
+        with open(slack_cfg_f) as slack_f:
             slack_settings = json.load(slack_f)
 
-        OATH = slack_settings["OAUTH_TOKEN"]
+        OAUTH_TOKEN = slack_settings["OAUTH_TOKEN"]
         SLACKCHANNEL = slack_settings["CHANNEL"]
 
         # Establish Slack Web Client
-        client = slack.WebClient(token=OATH, ssl=ssl_context)
+        client = slack.WebClient(token=OAUTH_TOKEN, ssl=ssl_context)
 
         # Post slack_msg to Slack Channel
         client.chat_postMessage(
@@ -94,12 +97,17 @@ def main():
     ISENODE = arg.ise
 
     # Read *.json config for required ISE values.
-    with open(ise_cfg_file) as ise_f:
+    with open(ise_ers_cfg_f) as ise_f:
         ise_settings = json.load(ise_f)
 
     OAUTH = ise_settings["OAUTH"]
-    iPATTERN = ise_settings["iPATTERN"] # Include Pattern
-    xPATTERN = ise_settings["xPATTERN"] # Exclude Pattern
+
+    # Read *.json config for required ISE values.
+    with open(pattern_f) as pat_f:
+        pat_settings = json.load(pat_f)
+
+    iPATTERN = pat_settings["iPATTERN"] # Include Pattern
+    xPATTERN = pat_settings["xPATTERN"] # Exclude Pattern
 
     # ##########################################################################
     # GET ISE Host List and save to ilist = []

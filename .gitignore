@@ -5,6 +5,8 @@ _crick_splunk_creds.py
 __pycache__/
 *.py[cod]
 *$py.class
+*.sh
+*.json
 
 # C extensions
 *.so
