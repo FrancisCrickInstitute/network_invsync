@@ -2,6 +2,7 @@
 
 *network_invsync.py* uses an ISE API request to get a list of Network Devices. It also uses NORNIR to get a list of Network Devices configured in the YAML Inventory. A Python DIFF operations is used to compare the lists and post the differences to Slack.
 
+NOTE: ISE must be configured with a valid ERS Operator Account.
 
 ## Usage
 ```
@@ -58,7 +59,21 @@ $
 ```
 
 ... where:<br />
-*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. Go to https://www.base64encode.org/ and change to valid ISE ERS Credentials.<br />
+
+message = "username:password"
+message_bytes = message.encode('ascii')
+base64_bytes = base64.b64encode(message_bytes)
+#base64_message = base64_bytes.decode('ascii')
+
+*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. To generate valid ISE ERS Credentials, in Python interpreter type:
+
+```
+>>> message = "username:password"
+>>> message_bytes = message.encode('ascii')
+>>> base64_bytes = base64.b64encode(message_bytes)
+>>> base64_bytes
+b'dXNlcm5hbWU6cGFzc3dvcmQ='
+```
 
 - Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [5] file in *network_config* folder. This defines the OAUTH_TOKEN and CHANNEL required to post to your Slack environment. Expected format is:
 
