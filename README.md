@@ -37,9 +37,8 @@ $
 
 ```
 {
-    "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
     "iPATTERN": ["A", "B", "C"],
-    "xPATTERN": ["X", "Y", "Z"],
+    "xPATTERN": ["X", "Y", "Z"]
 }
 ```
 
