@@ -34,7 +34,7 @@ $
 
 ```
 
-- A Pattern JSON Configuration file is loaded from *config.json* [1]. Expected format is:
+- A JSON Configuration file is loaded from *config.json* [1]. Expected format is:
 
 ```
 {
@@ -51,7 +51,7 @@ $
 *mPAGES* is the maximum number of pages supported by the ISE API GET Request. This should be reflective of your environment (i.e. On the ISE PSN Node > Administration > Network Resources > Network Devices. Take total number of devices and divide by 100 to get Max Pages).<br />
 *yFILTER* is the YAML filter used by NORNIR to filter the hosts.yaml [3]. <br />
 
-- A YAML Configuration file is loaded *config.yaml* in the working directory [2]. This is used by NORNIR to build a list of hosts in the group PROD. It references the .yaml files in *network_inventory* [3] folder. The file also defines the number of concurrent connections supported.
+- A YAML Configuration file is loaded *config.yaml* [2]. It references the .yaml files in *network_inventory* folder. The file also defines the number of concurrent connections supported.
 
 - An ISE ERS JSON Configuration file is loaded from *ise_ers.json* [4]. Expected format is:
 
