@@ -16,6 +16,7 @@ python3 -m pip install -r requirements.txt
 ```
 
 Expected folder structure is:
+
 ```
 $
 .
@@ -62,7 +63,7 @@ $
 ```
 
 ... where:<br />
-*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. To generate valid ISE ERS Credentials, in Python interpreter type the following and replace username and password as required:
+*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. To generate, in Python interpreter type the following and replace username:password with valid ISE credentials:
 
 ```
 >>> message = "username:password"
@@ -82,7 +83,6 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
   "CHANNEL": <SLACK CHANNEL>"
 }
 ```
-
 
 ## Change History
 
