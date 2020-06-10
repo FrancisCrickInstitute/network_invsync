@@ -48,7 +48,7 @@ $
 ... where:<br />
 *iPATTERN* is the a pattern to include (i.e. ["A", "B", "C"] will match Router-A, Router-B, Router-C) and add to the list to be DIFF'ed.<br />
 *xPATTERN* is the a pattern to exclude (i.e. ["X", "Y", "Z"] will match Router-X, Router-Y, Router-Z) and NOT add to the list to be DIFF'ed.<br />
-*mPAGES* is the maximum number of pages supported by the ISE API GET Request. This should be reflective of your environment.<br />
+*mPAGES* is the maximum number of pages supported by the ISE API GET Request. This should be reflective of your environment (i.e. On the ISE PSN Node > Administration > Network Resources > Network Devices. Take total number of devices and divide by 100 to get Max Pages).<br />
 *yFILTER* is the YAML filter used by NORNIR to filter the hosts.yaml [3]. <br />
 
 - A YAML Configuration file is loaded *config.yaml* in the working directory [2]. This is used by NORNIR to build a list of hosts in the group PROD. It references the .yaml files in *network_inventory* [3] folder. The file also defines the number of concurrent connections supported.
