@@ -26,10 +26,10 @@ from modules._network_diffgen import diffgen
 
 PP = pprint.PrettyPrinter()
 
-# Define File Locations...
+# Custom Confiuration Files
 ise_ers_cfg_f = '../network_config/ise_ers.json' # ISE ERS Config File. Includes Base64 OAUTH.
 slack_cfg_f = '../network_config/slack_network_auto.json' # Slack Post Config File.
-pattern_f = 'pattern.json' # Pattern File used in DIFF operation
+config_f = 'config.json' # Pattern File used in DIFF operation
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -92,9 +92,13 @@ def main():
     parser = ArgumentParser(description='Usage:')
     parser.add_argument('-i', '--ise', type=str, required=True,
                         help='ISE Admin Node FQDN')
+    parser.add_argument('-s', '--slack', action='store_true',
+                        help='Post to Slack [OPTIONAL]')
+
     arg = parser.parse_args()
 
     ISENODE = arg.ise
+    SLACKPOST = arg.slack
 
     # Read *.json config for required ISE values.
     with open(ise_ers_cfg_f) as ise_f:
@@ -103,11 +107,13 @@ def main():
     OAUTH = ise_settings["OAUTH"]
 
     # Read *.json config for required ISE values.
-    with open(pattern_f) as pat_f:
-        pat_settings = json.load(pat_f)
+    with open(config_f) as cfg_f:
+        config = json.load(cfg_f)
 
-    iPATTERN = pat_settings["iPATTERN"] # Include Pattern
-    xPATTERN = pat_settings["xPATTERN"] # Exclude Pattern
+    iPATTERN = config["iPATTERN"] # ISE Include Pattern
+    xPATTERN = config["xPATTERN"] # ISE Exclude Pattern
+    mPAGES = config["mPAGES"] # ISE Maximum Number of Pages Supported. See line 129'ish
+    yFILTER = config["yFILTER"] # YAML Group
 
     # ##########################################################################
     # GET ISE Host List and save to ilist = []
@@ -134,9 +140,7 @@ def main():
 
     xdoc = []
 
-    MAX_PAGES = 2
-
-    for page in range(MAX_PAGES):
+    for page in range(mPAGES):
 
         url = "https://" + str(ISENODE) + ":9060/ers/config/networkdevice?size=100&page=" + str(page+1)
 
@@ -176,7 +180,7 @@ def main():
     ylist = []
 
     nr = InitNornir(config_file='config.yaml')
-    filter  = nr.filter(F(groups__contains='PROD'))
+    filter  = nr.filter(F(groups__contains=yFILTER[0]))
     for i in filter.inventory.hosts.keys():
         ylist.append(i)
 
@@ -201,7 +205,9 @@ def main():
         SLACK_LOG.append('\n** No Difference Found Between YAML and ISE Inventory ' + u'\u2714')
 
     print(SLACK_LOG)
-    slackpost_status = slackpost(SLACK_LOG)
+
+    if SLACKPOST: # True
+        slackpost_status = slackpost(SLACK_LOG)
 
 if __name__ == "__main__":
     main()

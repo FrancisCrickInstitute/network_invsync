@@ -21,12 +21,12 @@ $
 .
 ├── network_invsync
 │   ├── network_invsync.py
-│   ├── pattern.json [1]
+│   ├── config.json [1]
 │   ├── config.yaml [2]
 │   ├── README.md [THIS README]
-├── network_inventory [3]
+├── network_inventory
 │   ├── groups.yaml
-│   ├── hosts.yaml
+│   ├── hosts.yaml [3]
 │   ├── defaults.yaml
 ├── network_config
 │   ├── ise_ers.json [4]
@@ -34,21 +34,24 @@ $
 
 ```
 
-- A Pattern JSON Configuration file is loaded from *pattern.json* [1]. Expected format is:
+- A Pattern JSON Configuration file is loaded from *config.json* [1]. Expected format is:
 
 ```
 {
     "iPATTERN": ["A", "B", "C"],
-    "xPATTERN": ["X", "Y", "Z"]
+    "xPATTERN": ["X", "Y", "Z"],
+    "mPAGES": 2
+    "yFILTER": ["YAML Group/ Host"]
 }
 ```
 
 ... where:<br />
 *iPATTERN* is the a pattern to include (i.e. ["A", "B", "C"] will match Router-A, Router-B, Router-C) and add to the list to be DIFF'ed.<br />
 *xPATTERN* is the a pattern to exclude (i.e. ["X", "Y", "Z"] will match Router-X, Router-Y, Router-Z) and NOT add to the list to be DIFF'ed.<br />
+*mPAGES* is the maximum number of pages supported by the ISE API GET Request. This should be reflective of your environment.<br />
+*yFILTER* is the YAML filter used by NORNIR to filter the hosts.yaml [3]. <br />
 
-
-- A YAML Configuration file is loaded *config.yaml* in the working directory [2]. This is used by NORNIR to build a list of hosts given a *-y* CLI argument. It references the .yaml files in *network_inventory* [3] folder. The file also defines the number of concurrent connections supported.
+- A YAML Configuration file is loaded *config.yaml* in the working directory [2]. This is used by NORNIR to build a list of hosts in the group PROD. It references the .yaml files in *network_inventory* [3] folder. The file also defines the number of concurrent connections supported.
 
 - An ISE ERS JSON Configuration file is loaded from *ise_ers.json* [4]. Expected format is:
 
@@ -113,3 +116,7 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 ### Version 09.06.2020
 - Split Pattern and ISE Configuration into two separate files.
 - Updated README.md
+
+### Version 10.06.2020
+- Created config.json to store all custom attributes.
+- Added Slack CLI Argument.
