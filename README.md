@@ -28,7 +28,7 @@ $
 │   ├── README.md [THIS README]
 ├── network_inventory
 │   ├── groups.yaml
-│   ├── hosts.yaml [3]
+│   ├── hosts.yaml [4]
 │   ├── defaults.yaml
 ├── network_config
 │   ├── slack_network_auto.json [5]
@@ -50,9 +50,9 @@ $
 *iPATTERN* is the a pattern to include (i.e. ["A", "B", "C"] will match Router-A, Router-B, Router-C) and add to the list to be DIFF'ed.<br />
 *xPATTERN* is the a pattern to exclude (i.e. ["X", "Y", "Z"] will match Router-X, Router-Y, Router-Z) and NOT add to the list to be DIFF'ed.<br />
 *mPAGES* is the maximum number of pages supported by the ISE API GET Request. This should be reflective of your environment (i.e. On the ISE PSN Node > Administration > Network Resources > Network Devices. Take total number of devices and divide by 100 to get Max Pages).<br />
-*yFILTER* is the YAML filter used by NORNIR to filter the hosts.yaml [3]. <br />
+*yFILTER* is the YAML filter used by NORNIR to filter the hosts.yaml [4]. <br />
 
-- An ISE ERS JSON Configuration file is loaded from *invsync_ise.json* [4]. Expected format is:
+- An ISE ERS JSON Configuration file is loaded from *invsync_ise.json* [2]. Expected format is:
 
 ```
 {
