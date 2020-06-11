@@ -27,9 +27,9 @@ from modules._network_diffgen import diffgen
 PP = pprint.PrettyPrinter()
 
 # Custom Confiuration Files
-ise_ers_cfg_f = '../network_config/ise_ers.json' # ISE ERS Config File. Includes Base64 OAUTH.
 slack_cfg_f = '../network_config/slack_network_auto.json' # Slack Post Config File.
-config_f = 'config.json' # Pattern File used in DIFF operation
+invsync_ise_f = 'invsync_ise.json' # ISE ERS Config File. Includes Base64 OAUTH.
+invsync_cfg_f = 'invsync_cfg.json' # Script Config File.
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -94,26 +94,29 @@ def main():
                         help='ISE Admin Node FQDN')
     parser.add_argument('-s', '--slack', action='store_true',
                         help='Post to Slack [OPTIONAL]')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='Post to Slack [OPTIONAL]')
 
     arg = parser.parse_args()
 
     ISENODE = arg.ise
     SLACKPOST = arg.slack
+    DEBUG = arg.debug
 
-    # Read *.json config for required ISE values.
-    with open(ise_ers_cfg_f) as ise_f:
-        ise_settings = json.load(ise_f)
+    # Read invsync_ise_f.json config for required ISE values.
+    with open(invsync_ise_f) as ise_f:
+        ise = json.load(ise_f)
 
-    OAUTH = ise_settings["OAUTH"]
+    OAUTH = ise["OAUTH"]
 
-    # Read *.json config for required ISE values.
-    with open(config_f) as cfg_f:
-        config = json.load(cfg_f)
+    # Read invsync_cfg_f.json config for required ISE values.
+    with open(invsync_cfg_f) as cfg_f:
+        cfg = json.load(cfg_f)
 
-    iPATTERN = config["iPATTERN"] # ISE Include Pattern
-    xPATTERN = config["xPATTERN"] # ISE Exclude Pattern
-    mPAGES = config["mPAGES"] # ISE Maximum Number of Pages Supported. See line 129'ish
-    yFILTER = config["yFILTER"] # YAML Group
+    iPATTERN = cfg["iPATTERN"] # ISE Include Pattern
+    xPATTERN = cfg["xPATTERN"] # ISE Exclude Pattern
+    mPAGES = cfg["mPAGES"] # ISE Maximum Number of Pages Supported. See line 129'ish
+    yFILTER = cfg["yFILTER"] # YAML Group
 
     # ##########################################################################
     # GET ISE Host List and save to ilist = []
@@ -160,7 +163,9 @@ def main():
         # Convert to Python Dict {} and append to xdoc []
         xdoc.append(xmltodict.parse(response.text.encode('utf8')))
 
-    # print(PP.pprint(xdoc))
+    if DEBUG: # True
+        print('\n**DEBUG ISE POST GET Response:')
+        print(PP.pprint(xdoc))
 
     # Parse through XTVAL module to extract required values
     # ids = xtval(xdoc, '@id')
@@ -172,6 +177,9 @@ def main():
         if any(iPAT in host for iPAT in iPATTERN) and not any(xPAT in host for xPAT in xPATTERN):
             ilist.append(host)
 
+    if DEBUG: # True
+        print('\n**DEBUG ISE Filtered List:')
+        print(PP.pprint(ilist))
 
     # ##########################################################################
     # GET YAML Host Lsit and save to ylist[]
@@ -184,11 +192,22 @@ def main():
     for i in filter.inventory.hosts.keys():
         ylist.append(i)
 
+    if DEBUG: # True
+        print('\n**DEBUG YAML List:')
+        print(PP.pprint(ylist))
+
     # ##########################################################################
     # DIFF
     # ##########################################################################
 
     idiff, ydiff = diffgen(ilist, ylist)
+
+    if DEBUG: # True
+        print('\n**DEBUG iDIFF - Configured on ISE but not in YAML:')
+        print(PP.pprint(idiff))
+        print('\n**DEBUG yDIFF - Configured in YAML but not on ISE:')
+        print(PP.pprint(ydiff))
+        print('\n')
 
     # WRITE SLACK_LOG to slackpost() function for processing
     SLACK_LOG.append('Network InvSync Script Results...')

@@ -22,20 +22,20 @@ $
 .
 ├── network_invsync
 │   ├── network_invsync.py
-│   ├── config.json [1]
-│   ├── config.yaml [2]
+│   ├── invsync_cfg.json [1]
+│   ├── invsync_ise.json [2]
+│   ├── config.yaml [3]
 │   ├── README.md [THIS README]
 ├── network_inventory
 │   ├── groups.yaml
 │   ├── hosts.yaml [3]
 │   ├── defaults.yaml
 ├── network_config
-│   ├── ise_ers.json [4]
 │   ├── slack_network_auto.json [5]
 
 ```
 
-- A JSON Configuration file is loaded from *config.json* [1]. Expected format is:
+- A JSON Configuration file is loaded from *invsync_cfg.json* [1]. Expected format is:
 
 ```
 {
@@ -52,9 +52,7 @@ $
 *mPAGES* is the maximum number of pages supported by the ISE API GET Request. This should be reflective of your environment (i.e. On the ISE PSN Node > Administration > Network Resources > Network Devices. Take total number of devices and divide by 100 to get Max Pages).<br />
 *yFILTER* is the YAML filter used by NORNIR to filter the hosts.yaml [3]. <br />
 
-- A YAML Configuration file is loaded *config.yaml* [2]. It references the .yaml files in *network_inventory* folder. The file also defines the number of concurrent connections supported.
-
-- An ISE ERS JSON Configuration file is loaded from *ise_ers.json* [4]. Expected format is:
+- An ISE ERS JSON Configuration file is loaded from *invsync_ise.json* [4]. Expected format is:
 
 ```
 {
@@ -63,7 +61,7 @@ $
 ```
 
 ... where:<br />
-*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. To generate, in Python interpreter type the following and replace username:password with valid ISE credentials:
+*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. To generate, in Python interpreter type the following and replace username:password with valid ISE ERS credentials:
 
 ```
 >>> message = "username:password"
@@ -72,6 +70,8 @@ $
 >>> base64_bytes
 b'dXNlcm5hbWU6cGFzc3dvcmQ='
 ```
+
+- A YAML Configuration file is loaded *config.yaml* [3]. It references the .yaml files in *network_inventory* folder. The file also defines the number of concurrent connections supported.
 
 - Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [5] file in *network_config* folder. This defines the OAUTH_TOKEN and CHANNEL required to post to your Slack environment. Expected format is:
 
@@ -120,3 +120,9 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 ### Version 10.06.2020
 - Created config.json to store all custom attributes.
 - Added Slack CLI Argument.
+
+### Version 11.06.2020
+- Moved ISE Config file from ../network_config to local folder.
+- Added Example ISE and CFG JSON files.
+- Added Debug CLI argument.
+- Updated README.md
