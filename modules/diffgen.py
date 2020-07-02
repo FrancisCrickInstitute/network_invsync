@@ -15,23 +15,18 @@ def diff(listA, listB):
     '''
     return list(set(listA) - set(listB))
 
-def diffgen(ilist, ylist):
+def diffgen(xlist, xdict):
     '''
     DIFFGEN Function
     '''
 
-    idiff = []
-    ydiff = []
+    qdiff = []
+    qlist = []
 
-    try:
+    for k in xdict.keys():
+        if k in xlist:
+            pass
+        else:
+            qlist.append(k)
 
-        # Generaate list of nodes configured on ISE but not in YAML
-        idiff = diff(ilist, ylist)
-
-        # Generate list of nodes configured in YSML but no in ISE
-        ydiff = diff(ylist, ilist)
-
-    except:
-        pass
-
-    return (idiff, ydiff)
+    return qlist

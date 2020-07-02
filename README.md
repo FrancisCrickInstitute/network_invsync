@@ -129,3 +129,9 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 02.07.2020
 - Git Checkpoint
+
+### Version 02.07.2020_2
+- Major overhaul to support querying of NetDisco. Functions now modularised.
+
+### Version 02.07.2020_3
+- Corrected error in Slack Posting and minor printing tweaks.
