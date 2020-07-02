@@ -115,6 +115,7 @@ def main():
 
     iPATTERN = cfg["iPATTERN"] # ISE Include Pattern
     xPATTERN = cfg["xPATTERN"] # ISE Exclude Pattern
+    dSTRIP = cfg["dSTRIP"] # Domain Strip Patter
     mPAGES = cfg["mPAGES"] # ISE Maximum Number of Pages Supported. See line 129'ish
     yFILTER = cfg["yFILTER"] # YAML Group
 
@@ -197,8 +198,70 @@ def main():
         print(PP.pprint(ylist))
 
     # ##########################################################################
-    # DIFF
+    # GET NetDeisco Host Lsit and save to nlist[]
     # ##########################################################################
+    nlist = []
+
+    netdisco_cfg_f  = 'netdisco_cfg.json'
+
+    with open(netdisco_cfg_f) as netdisco_f:
+        netdisco_cfg = json.load(netdisco_f)
+
+    USERNAME = netdisco_cfg["USERNAME"]
+    PASSWORD = netdisco_cfg["PASSWORD"]
+    URL = netdisco_cfg["URL"]
+
+    #Get API KEY. Valid for 3600 seconds
+    api_key_post = requests.post('http://' + str(URL) + '/login',
+                  auth=(USERNAME, PASSWORD),
+                  headers={'Accept': 'application/json'})
+
+    print('\n**DEBUG (modules/netdisco_api.py) : Netdisco API Session Key: ')
+    print(api_key_post.json()['api_key'])
+
+    api_get_devices = requests.get('http://' + str(URL) + '/api/v1/report/device/devicebylocation',
+                headers={'Accept': 'application/json',
+               'Authorization': api_key_post.json()['api_key'] })
+
+    print('\n**DEBUG (modules/netdisco_api.py) : Netdisco API Session Key: ')
+    print(json.dumps(api_get_devices.json(), indent=2, sort_keys=True))
+
+    nlist = []
+    hlist = []
+
+    for host in api_get_devices.json():
+        hlist.append(host['name'])
+
+    for host in hlist:
+        if any(iPAT in host for iPAT in iPATTERN) and not any(xPAT in host for xPAT in xPATTERN):
+            for strip in dSTRIP:
+                nlist.append(host.strip(strip))
+
+    ipdb.set_trace()
+
+
+
+    for host in hlist:
+        print(host)
+        if any(iPAT in host for iPAT in iPATTERN) and not any(xPAT in host for xPAT in xPATTERN):
+            nlist.append(n)
+#
+#        # Example Return
+#        # {'dns': 'switch-a.company.x', 'location': 'Somewhere', 'ip': '10.1.2.3', 'model': '3524', 'name': 'switch-a.comapny.x', 'vendor': 'cisco'}
+#        if i['name'].find('WLC') or not i['name'].find('BP') or not i['name'].find('SL'):
+#            pass
+#        elif i['vendor'] == 'cisco':
+#            nlist.append(i['name'])
+#        else:
+#            pass
+
+
+
+
+    # ##########################################################################
+    # DIFF
+    # #######################################################
+    ###################
 
     idiff, ydiff = diffgen(ilist, ylist)
 

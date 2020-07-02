@@ -1,0 +1,6 @@
+Rename to netdisco_cfg.json and remove this line!!!
+{
+    "USERNAME": "Valid NetDisco Username",
+    "PASSWORD": "Valid NetDisco Password",
+    "URL": "Valid NetDisco FQDN:PORT e.g. netdisco.mycompany.mytopleveldomain:5000"
+}

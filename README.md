@@ -126,3 +126,6 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 - Added Example ISE and CFG JSON files.
 - Added Debug CLI argument.
 - Updated README.md
+
+### Version 02.07.2020
+- Git Checkpoint
