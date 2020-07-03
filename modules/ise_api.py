@@ -18,17 +18,21 @@ pp = pprint.PrettyPrinter()
 
 def ise_api(SESSION_TK):
 
+    print('\n' + '#' * 10 + ' ISE API Query ' + '#' * 10 + '\n')
+
     if SESSION_TK['vDEBUG']: # True
         print('\n***DEBUG ISE SESSION_TK REceived:')
         print(pp.pprint(SESSION_TK))
 
     # Read .json config for required ISE values.
-    ise_f = 'modules/ise_api.json' # Script Config File.
+    ise_f = 'config/ise_api.json' # Script Config File.
 
     with open(ise_f) as ise_f:
         ise = json.load(ise_f)
 
     OAUTH = ise["OAUTH"]
+    URL = ise['URL']
+    PAGES = ise['PAGES']
 
     # Define Global API POST request values
     payload = {}
@@ -49,9 +53,9 @@ def ise_api(SESSION_TK):
 
     xdoc = []
 
-    for page in range(SESSION_TK['mPAGES']):
+    for page in range(PAGES):
 
-        url = "https://" + str(SESSION_TK['ISENODE']) + ":9060/ers/config/networkdevice?size=100&page=" + str(page+1)
+        url = "https://" + str(URL) + ":9060/ers/config/networkdevice?size=100&page=" + str(page+1)
 
         # POST GET Response. User verify=False to disable SSL wanrings
         response = requests.request("GET", url, headers=headers, data=payload, verify=False)

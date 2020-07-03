@@ -82,14 +82,14 @@ def slackpost(SLACK_LOG):
 def invsync():
     ''' MAIN FUNCTION '''
 
-    print('\nQuerying ISE & YAML. Please Wait...')
+    print('\nQuerying ISE, YAML and NetMiko Inventory. Please Wait...')
 
     # Process Command Line Argument
     parser = ArgumentParser(description='Usage:')
-    parser.add_argument('-i', '--ise', type=str, required=True,
-                        help='ISE Admin Node FQDN')
-    parser.add_argument('-s', '--slack', action='store_true',
-                        help='Post to Slack [OPTIONAL]')
+#    parser.add_argument('-i', '--ise', type=str, required=True,
+#                        help='ISE Admin Node FQDN')
+#    parser.add_argument('-s', '--slack', action='store_true',
+#                        help='Post to Slack [OPTIONAL]')
     parser.add_argument('-d', '--basicdebug', action='store_true',
                         help='Basic Debug')
     parser.add_argument('-v', '--verbosedebug', action='store_true',
@@ -97,13 +97,13 @@ def invsync():
 
     arg = parser.parse_args()
 
-    SESSION_TK['ISENODE'] = arg.ise
-    SESSION_TK['SLACKPOST'] = arg.slack
+    #SESSION_TK['ISENODE'] = arg.ise
+    #SESSION_TK['SLACKPOST'] = arg.slack
     SESSION_TK['bDEBUG'] = arg.basicdebug
     SESSION_TK['vDEBUG'] = arg.verbosedebug
 
     # Read INVSYNC Config File
-    invsync_cfg_f = 'invsync_cfg.json' # Script Config File.
+    invsync_cfg_f = 'config/invsync_cfg.json' # Script Config File.
 
     with open(invsync_cfg_f) as cfg_f:
         cfg = json.load(cfg_f)
@@ -111,7 +111,7 @@ def invsync():
     SESSION_TK['iPATTERN'] = cfg["iPATTERN"] # ISE Include Pattern
     SESSION_TK['xPATTERN'] = cfg["xPATTERN"] # ISE Exclude Pattern
     SESSION_TK['dSTRIP'] = cfg["dSTRIP"] # Domain Strip Patter
-    SESSION_TK['mPAGES'] = cfg["mPAGES"] # ISE Maximum Number of Pages Supported. See line 129'ish
+    #SESSION_TK['mPAGES'] = cfg["mPAGES"] # ISE Maximum Number of Pages Supported. See line 129'ish
     SESSION_TK['yFILTER'] = cfg["yFILTER"] # YAML Group
     SESSION_TK['SLACKPOST'] = cfg['SLACKPOST']
 
@@ -142,7 +142,7 @@ def invsync():
             SLACK_LOG.append(i)
 
     if ydiff:
-        SLACK_LOG.append('\n** Configured from YAML Inventory:')
+        SLACK_LOG.append('\n** Missing from YAML Inventory:')
         for y in ydiff:
             SLACK_LOG.append(y)
 

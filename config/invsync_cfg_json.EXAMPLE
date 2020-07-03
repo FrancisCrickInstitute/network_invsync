@@ -3,6 +3,5 @@ Remove this line and rename to invsync_cfg.json
     "iPATTERN": ["ROUTER-A","ROUTER-B","SWITCH-C"],
     "xPATTERN": ["ROUTER-X","ROUTER-Y","SWITCH-Z"],
     "dSTRIP": ["mycompany.mydomain"]
-    "mPAGES": 2,
     "yFILTER": ["YAML Group/ Host"]
 }

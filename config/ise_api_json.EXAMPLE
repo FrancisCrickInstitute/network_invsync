@@ -1,0 +1,6 @@
+Remove this line and rename to invsync_ise_cfg.json
+{
+    "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+    "URL": "ISE Admon Node FQDN",
+    "PAGES": "See comments in ise_api.py (e.g. 2)"
+}

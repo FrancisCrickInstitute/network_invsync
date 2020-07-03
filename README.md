@@ -135,3 +135,6 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 02.07.2020_3
 - Corrected error in Slack Posting and minor printing tweaks.
+
+### Version 02.07.2020_4
+- Moved all config files into /config folder

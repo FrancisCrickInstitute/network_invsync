@@ -16,11 +16,13 @@ pp = pprint.PrettyPrinter()
 
 def netdisco_api(SESSION_TK):
 
+    print('\n' + '#' * 10 + ' NetDisco API Query ' + '#' * 10 + '\n')
+
     if SESSION_TK['vDEBUG']: # True
         print('\n***DEBUG NetDisco SESSION_TK Received:')
         print(pp.pprint(SESSION_TK))
 
-    netdisco_cfg_f = 'modules/netdisco_cfg.json' # NetDisco Config File
+    netdisco_cfg_f = 'config/netdisco_cfg.json' # NetDisco Config File
 
     with open(netdisco_cfg_f) as netdisco_f:
         netdisco_cfg = json.load(netdisco_f)
@@ -29,10 +31,11 @@ def netdisco_api(SESSION_TK):
     PASSWORD = netdisco_cfg["PASSWORD"]
     URL = netdisco_cfg["URL"]
 
-    #Get API KEY. Valid for 3600 seconds
+    #Get API KEY with POST request . Valid for 3600 seconds
     api_key_post = requests.post('http://' + str(URL) + '/login',
                   auth=(USERNAME, PASSWORD),
                   headers={'Accept': 'application/json'})
+
 
     if SESSION_TK['vDEBUG']: # True
         print('\n***DEBUG (modules/netdisco_api.py) : Netdisco API Session Key: ')
@@ -47,10 +50,11 @@ def netdisco_api(SESSION_TK):
         print(json.dumps(api_get_devices.json(), indent=2, sort_keys=True))
 
     xlist = []
-    nlist = []
 
     for host in api_get_devices.json():
         xlist.append(host['name'])
+
+    nlist = []
 
     for host in xlist:
         if any(iPAT in host for iPAT in SESSION_TK['iPATTERN']) and not any(xPAT in host for xPAT in SESSION_TK['xPATTERN']):

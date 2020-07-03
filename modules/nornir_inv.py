@@ -16,13 +16,15 @@ pp = pprint.PrettyPrinter()
 
 def nornir_inv(SESSION_TK):
 
+    print('\n' + '#' * 10 + ' Nornir Inventory Query ' + '#' * 10 + '\n')
+
     if SESSION_TK['vDEBUG']: # True
         print('\n***DEBUG Nornir YAML SESSION_TK Received:')
         print(pp.pprint(SESSION_TK))
 
     ylist = []
 
-    nr = InitNornir(config_file='modules/nornir_inv.yaml')
+    nr = InitNornir(config_file='config/nornir_inv.yaml')
 
     filter  = nr.filter(F(groups__contains=SESSION_TK['yFILTER'][0]))
     for i in filter.inventory.hosts.keys():
