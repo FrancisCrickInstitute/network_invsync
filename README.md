@@ -20,17 +20,25 @@ Expected folder structure is:
 ```
 $
 .
-├── network_invsync
+├── network_invsync/
 │   ├── network_invsync.py
-│   ├── invsync_cfg.json [1]
-│   ├── invsync_ise.json [2]
-│   ├── config.yaml [3]
+│   ├── modules/
+│   │   ├── diffgen.py
+│   │   ├── ise_api.py
+│   │   ├── netdisco_api.py
+│   │   ├── nornir_yml.py
+│   │   ├── nornir_yml.py
+│   ├── config/
+│   │   ├── invsync_cfg.json [1]
+│   │   ├── ise_cfg.json [2]
+│   │   ├── netdisco_cfg.json [3]
+│   │   ├── nornir_cfg.json [4]
 │   ├── README.md [THIS README]
-├── network_inventory
+├── network_inventory/
 │   ├── groups.yaml
-│   ├── hosts.yaml [4]
+│   ├── hosts.yaml
 │   ├── defaults.yaml
-├── network_config
+├── network_config/
 │   ├── slack_network_auto.json [5]
 
 ```
@@ -39,29 +47,32 @@ $
 
 ```
 {
-    "iPATTERN": ["A", "B", "C"],
-    "xPATTERN": ["X", "Y", "Z"],
-    "mPAGES": 2
-    "yFILTER": ["YAML Group/ Host"]
+    "iPATTERN": ["ROUTER-A","ROUTER-B","SWITCH-C"],
+    "xPATTERN": ["ROUTER-X","ROUTER-Y","SWITCH-Z"],
+    "dSTRIP": ["mycompany.mydomain"],
+    "yFILTER": ["YAML Group/ Host"],
+    "SLACKPOST": 1
 }
 ```
 
 ... where:<br />
 *iPATTERN* is the a pattern to include (i.e. ["A", "B", "C"] will match Router-A, Router-B, Router-C) and add to the list to be DIFF'ed.<br />
 *xPATTERN* is the a pattern to exclude (i.e. ["X", "Y", "Z"] will match Router-X, Router-Y, Router-Z) and NOT add to the list to be DIFF'ed.<br />
-*mPAGES* is the maximum number of pages supported by the ISE API GET Request. This should be reflective of your environment (i.e. On the ISE PSN Node > Administration > Network Resources > Network Devices. Take total number of devices and divide by 100 to get Max Pages).<br />
+*dSTRIP* is any domain suffix to strip from hostnames pulled from ISE or NetDisco to maintain parity with Nornir YAML Inventory.<br />
 *yFILTER* is the YAML filter used by NORNIR to filter the hosts.yaml [4]. <br />
 
-- An ISE ERS JSON Configuration file is loaded from *invsync_ise.json* [2]. Expected format is:
+- An ISE ERS JSON Configuration file is loaded from *ise_cfg.json* [2]. Expected format is:
 
 ```
 {
-    "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+    "OAUTH": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+    "URL": "ISE Admon Node FQDN",
+    "PAGES": "ISE Page Size Limitation"
 }
 ```
 
 ... where:<br />
-*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. To generate, in Python interpreter type the following and replace username:password with valid ISE ERS credentials:
+*dXNlcm5hbWU6cGFzc3dvcmQ=* is a Base64 encoding of the actual string *username:password*. To generate, in Python interpreter type the following and replace username:password with valid ISE ERS credentials:<br/>
 
 ```
 >>> message = "username:password"
@@ -71,9 +82,26 @@ $
 b'dXNlcm5hbWU6cGFzc3dvcmQ='
 ```
 
-- A YAML Configuration file is loaded *config.yaml* [3]. It references the .yaml files in *network_inventory* folder. The file also defines the number of concurrent connections supported.
+*URL* is the FQDN of the ISE Admin Node.<br/>
+*PAGES* is the ISE page limitation. To calculate, take the total number of Network Devices and divide by 100 (e.g. for 191, pages will be 2).
 
-- Where the *-s* (Post-to-Slack) CLI argument is passed, expectation is there is a *slack_network_auto.json* [5] file in *network_config* folder. This defines the OAUTH_TOKEN and CHANNEL required to post to your Slack environment. Expected format is:
+- A NetDisco Configuration file is loaded from *netdisco_cfg* [3]. Expected format is:
+
+```
+{
+    "USERNAME": "Valid NetDisco Username",
+    "PASSWORD": "Valid NetDisco Password",
+    "URL": "Valid NetDisco FQDN:PORT e.g. netdisco.mycompany.mytopleveldomain:5000"
+}
+```
+
+... where:<br />
+*USERNAME* & *PASSWORD* are valid NetDisco credentials
+*URL* is the URL of NetDisco & TCP Port (if applicable). Go to http://{URL}/swagger-ui/ to get started.
+
+- A YAML Configuration file is loaded *nornir_cfg.yaml* [4]. It references the .yaml files in *network_inventory* folder. The file also defines the number of concurrent connections supported.
+
+- Where SLACKPOST = 1 in , expectation is there is a *slack_network_auto.json* [5] file in *network_config* folder. This defines the OAUTH_TOKEN and CHANNEL required to post to your Slack environment. Expected format is:
 
 ```
 {
@@ -138,3 +166,10 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 02.07.2020_4
 - Moved all config files into /config folder
+
+### Version 03.07.2020
+- Moved ISE URL into ise_api.json instead of a CLI Argument.
+
+### Version 06.07.2020
+- Logging cleanup.
+- README.md updated.

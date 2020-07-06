@@ -11,7 +11,9 @@ import json # Required to process *.json ISE config file and Slack Posting
 import slack # Required for Slack Post. NOTE: 'pip install slackclient'
 import ssl # Required for Slack Post.
 import urllib3 # Required to disable SSL Warnings
-import time # Require for requests delay function
+import os # Required for Log File Writing
+import datetime # Required for Start/ End time
+import pprint # Optional to Pretty Print Responses
 import ipdb # Optional Debug. ipdb.set_trace()
 
 from argparse import ArgumentParser # Required for Command Line Argument parsing
@@ -19,9 +21,10 @@ from argparse import ArgumentParser # Required for Command Line Argument parsin
 # Import custom modules
 from modules.diffgen import diffgen
 from modules.ise_api import ise_api
-from modules.nornir_inv import nornir_inv
+from modules.nornir_yml import nornir_yml
 from modules.netdisco_api import netdisco_api
 
+pp = pprint.PrettyPrinter()
 SESSION_TK = {}
 
 # Custom Confiuration Files
@@ -29,7 +32,8 @@ slack_cfg_f = '../network_config/slack_network_auto.json' # Slack Post Config Fi
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-SLACK_LOG = []
+MASTER_LOG = [] # MASTER_LOG as list of tuples. Logs flagged with 1 to be sent to
+                # slackpost.
 
 def slackpost(SLACK_LOG):
     ''' Post to Slack Function '''
@@ -79,85 +83,157 @@ def slackpost(SLACK_LOG):
 
     return slackpost_status
 
-def invsync():
+def main():
     ''' MAIN FUNCTION '''
+
+    status = False
 
     print('\nQuerying ISE, YAML and NetMiko Inventory. Please Wait...')
 
+    start_time = datetime.datetime.now()
+
     # Process Command Line Argument
     parser = ArgumentParser(description='Usage:')
-#    parser.add_argument('-i', '--ise', type=str, required=True,
-#                        help='ISE Admin Node FQDN')
-#    parser.add_argument('-s', '--slack', action='store_true',
-#                        help='Post to Slack [OPTIONAL]')
     parser.add_argument('-d', '--basicdebug', action='store_true',
                         help='Basic Debug')
     parser.add_argument('-v', '--verbosedebug', action='store_true',
                         help='Verbose Debug')
-
     arg = parser.parse_args()
 
-    #SESSION_TK['ISENODE'] = arg.ise
-    #SESSION_TK['SLACKPOST'] = arg.slack
     SESSION_TK['bDEBUG'] = arg.basicdebug
     SESSION_TK['vDEBUG'] = arg.verbosedebug
 
-    # Read INVSYNC Config File
-    invsync_cfg_f = 'config/invsync_cfg.json' # Script Config File.
+    MASTER_LOG.append(('Network InvSync Script Results...', 1))
+    
+    # File Method
+    try:
+        # Read INVSYNC Config File
+        invsync_cfg_f = 'config/invsync_cfg.json' # Script Config File.
 
-    with open(invsync_cfg_f) as cfg_f:
-        cfg = json.load(cfg_f)
+        with open(invsync_cfg_f) as cfg_f:
+            cfg = json.load(cfg_f)
 
-    SESSION_TK['iPATTERN'] = cfg["iPATTERN"] # ISE Include Pattern
-    SESSION_TK['xPATTERN'] = cfg["xPATTERN"] # ISE Exclude Pattern
-    SESSION_TK['dSTRIP'] = cfg["dSTRIP"] # Domain Strip Patter
-    #SESSION_TK['mPAGES'] = cfg["mPAGES"] # ISE Maximum Number of Pages Supported. See line 129'ish
-    SESSION_TK['yFILTER'] = cfg["yFILTER"] # YAML Group
-    SESSION_TK['SLACKPOST'] = cfg['SLACKPOST']
+        SESSION_TK['iPATTERN'] = cfg["iPATTERN"] # ISE Include Pattern
+        SESSION_TK['xPATTERN'] = cfg["xPATTERN"] # ISE Exclude Pattern
+        SESSION_TK['dSTRIP'] = cfg["dSTRIP"] # Domain Strip Patter
+        SESSION_TK['yFILTER'] = cfg["yFILTER"] # YAML Group
+        SESSION_TK['SLACKPOST'] = cfg['SLACKPOST']
 
-    ilist = ise_api(SESSION_TK) # Query ISE API
-    ylist = nornir_inv(SESSION_TK) # Query Nornir YAML Inventory
-    nlist = netdisco_api(SESSION_TK) # Query NetDisco API
+    except Exception as error:
+        MASTER_LOG.append(('File Error: ' + str(error) + '. ' + str(invsync_cfg_f) \
+            + ' missing or invalid', 1))
 
-    xdict = {} # Use a dict to de-duplicate
+    # GET Query Methods
+    try:
+        while True:
+            # ISE API Query
+            ise_status, ise_log, ise_list = ise_api(SESSION_TK)
 
-    for i in ilist:
-        xdict[i] = ''
+            for line in ise_log:
+                MASTER_LOG.append(line)
 
-    for y in ylist:
-        xdict[y] = ''
+            if not ise_status: # False
+                status = False
+                break
 
-    for n in nlist:
-        xdict[n] = ''
+            # Nornir YAML Query
+            nornir_status, nornir_log, nornir_list = nornir_yml(SESSION_TK)
 
-    idiff = diffgen(ilist, xdict)
-    ydiff = diffgen(ylist, xdict)
-    ndiff = diffgen(nlist, xdict)
+            for line in nornir_log:
+                MASTER_LOG.append(line)
 
-    # WRITE SLACK_LOG to slackpost() function for processing
-    SLACK_LOG.append('Network InvSync Script Results...')
-    if idiff:
-        SLACK_LOG.append('\n** Missing from ISE Inventory:')
-        for i in idiff:
-            SLACK_LOG.append(i)
+            if not nornir_status: # False
+                status = False
+                break
 
-    if ydiff:
-        SLACK_LOG.append('\n** Missing from YAML Inventory:')
-        for y in ydiff:
-            SLACK_LOG.append(y)
+            # NetDisco API Query
+            netdisco_status, netdisco_log, netdisco_list = netdisco_api(SESSION_TK)
 
-    if ndiff:
-        SLACK_LOG.append('\n** Missing from NetMiko Inventory:')
-        for n in ndiff:
-            SLACK_LOG.append(n)
+            for line in netdisco_log:
+                MASTER_LOG.append(line)
 
-    if not idiff and not ydiff and not ndiff:
-        SLACK_LOG.append('\n** No Difference Found Between YAML, ISE and NetMiko Inventory ' + u'\u2714')
+            if not netdisco_status: # False
+                status = False
+                break
 
-    print(SLACK_LOG)
+            status = True
 
+            break
+
+    except Exception as error:
+        MASTER_LOG.append(('Query Error: ' + str(error), 1))
+
+    # DIFF Method
+    if status: # True
+
+        xdict = {} # Use a dict to de-duplicate
+
+        for i in ise_list:
+            xdict[i] = ''
+
+        for y in nornir_list:
+            xdict[y] = ''
+
+        for n in netdisco_list:
+            xdict[n] = ''
+
+        # xdict {} should now contain all nodes across all methods
+
+        # Call diffgen Module
+        idiff = diffgen(ise_list, xdict)
+        ydiff = diffgen(nornir_list, xdict)
+        ndiff = diffgen(netdisco_list, xdict)
+
+        # WRITE SLACK_LOG to slackpost() function for processing
+        if idiff:
+            MASTER_LOG.append(('\n** Missing from ISE Inventory:', 1))
+            for i in idiff:
+                MASTER.append((i, 1))
+
+        if ydiff:
+            MASTER_LOG.append(('\n** Missing from YAML Inventory:', 1))
+            for y in ydiff:
+                MASTER_LOG.append((y, 1))
+
+        if ndiff:
+            MASTER_LOG.append(('\n** Missing from NetDisco Inventory:', 1))
+            for n in ndiff:
+                MASTER_LOG.append((n, 1))
+
+        if not idiff and not ydiff and not ndiff:
+            MASTER_LOG.append(('\n** No Difference Found Between YAML, ISE and NetDisco Inventory ' + u'\u2714', 1))
+
+    # WRITE MASTER_LOG to file
+    # Make a folder in script working directory to store results
+    logdir = '../LOGS/network_invsync_log/'
+    # Modify the time stamp to not contain special characters (: & /)
+    log_time = start_time.strftime('%Y_%m_%d_%H_%M_%S')
+
+    try:
+        os.makedirs(logdir)
+    except FileExistsError:
+        pass # Folder exisits so nothing to do
+
+    logfile = open(logdir + str(log_time) + '.log', 'w')
+
+    for line in MASTER_LOG:
+        logfile.write(str(line[0]) + '\n')
+
+    logfile.close()
+
+    for line in MASTER_LOG:
+        print(line)
+
+    print('MASTER_LOG saved to ' + str(logfile))
+
+    # POST to Slack
     if SESSION_TK['SLACKPOST'] == 1: # True
+        SLACK_LOG = []
+        for line in MASTER_LOG:
+            if line[1] == 1:
+                SLACK_LOG.append(line[0])
+
         slackpost_status = slackpost(SLACK_LOG)
 
 if __name__ == "__main__":
-    invsync()
+    main()
