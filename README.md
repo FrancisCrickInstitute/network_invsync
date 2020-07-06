@@ -173,3 +173,6 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 ### Version 06.07.2020
 - Logging cleanup.
 - README.md updated.
+
+### Version 06.07.2020_2
+- Corrected minor typo

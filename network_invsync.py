@@ -104,7 +104,7 @@ def main():
     SESSION_TK['vDEBUG'] = arg.verbosedebug
 
     MASTER_LOG.append(('Network InvSync Script Results...', 1))
-    
+
     # File Method
     try:
         # Read INVSYNC Config File
@@ -188,7 +188,7 @@ def main():
         if idiff:
             MASTER_LOG.append(('\n** Missing from ISE Inventory:', 1))
             for i in idiff:
-                MASTER.append((i, 1))
+                MASTER_LOG.append((i, 1))
 
         if ydiff:
             MASTER_LOG.append(('\n** Missing from YAML Inventory:', 1))
