@@ -6,86 +6,29 @@ Network InvSync Python Script - Verify ISE and YAML Inventories are Synchronized
 __author__ = 'Paul Mahan, Francis Crick Institute, London UK'
 __copyright__ = 'None. Enjoy :-)'
 
+from argparse import ArgumentParser # Required for Command Line Argument parsing
 
 import json # Required to process *.json ISE config file and Slack Posting
-import slack # Required for Slack Post. NOTE: 'pip install slackclient'
-import ssl # Required for Slack Post.
-import urllib3 # Required to disable SSL Warnings
 import os # Required for Log File Writing
 import datetime # Required for Start/ End time
-import pprint # Optional to Pretty Print Responses
-import ipdb # Optional Debug. ipdb.set_trace()
-
-from argparse import ArgumentParser # Required for Command Line Argument parsing
+import urllib3 # Required to disable SSL Warnings
+#import ipdb # Optional Debug. ipdb.set_trace()
 
 # Import custom modules
 from modules.diffgen import diffgen
 from modules.ise_api import ise_api
 from modules.nornir_yml import nornir_yml
 from modules.netdisco_api import netdisco_api
-
-pp = pprint.PrettyPrinter()
-SESSION_TK = {}
-
-# Custom Confiuration Files
-slack_cfg_f = '../network_config/slack_network_auto.json' # Slack Post Config File.
+from modules.slackpost import slackpost
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-MASTER_LOG = [] # MASTER_LOG as list of tuples. Logs flagged with 1 to be sent to
-                # slackpost.
-
-def slackpost(SLACK_LOG):
-    ''' Post to Slack Function '''
-
-    try:
-        # Comment out:
-        #
-        # for line in SLACK_LOG:
-        #    post_to_slack(line)
-        #
-        # At the end of the main function to disable!
-
-        # Build our message_string to post to Slack
-        message_string = ""
-
-        for line in SLACK_LOG:
-            message_string += str(line)
-            message_string += '\n'
-
-        # Build our JSON payload to post to Slack
-        message_data = []
-        message_data.append({"type": "section", "text": {"type": "mrkdwn", "text": message_string}})
-
-        ssl_context = ssl.create_default_context()
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
-
-        # Read *.json config for required tokens
-        with open(slack_cfg_f) as slack_f:
-            slack_settings = json.load(slack_f)
-
-        OAUTH_TOKEN = slack_settings["OAUTH_TOKEN"]
-        SLACKCHANNEL = slack_settings["CHANNEL"]
-
-        # Establish Slack Web Client
-        client = slack.WebClient(token=OAUTH_TOKEN, ssl=ssl_context)
-
-        # Post slack_msg to Slack Channel
-        client.chat_postMessage(
-            channel=SLACKCHANNEL,
-            blocks=message_data)
-
-        slackpost_status = True
-
-    except:
-        slackpost_status = False
-
-    return slackpost_status
 
 def main():
     ''' MAIN FUNCTION '''
 
+    SESSION_TK = {}
+    MASTER_LOG = [] # MASTER_LOG as list of tuples. Logs flagged with 1 to be sent to
+                    # slackpost.
     status = False
 
     print('\nQuerying ISE, YAML and NetMiko Inventory. Please Wait...')
@@ -120,8 +63,8 @@ def main():
         SESSION_TK['SLACKPOST'] = cfg['SLACKPOST']
 
     except Exception as error:
-        MASTER_LOG.append(('File Error: ' + str(error) + '. ' + str(invsync_cfg_f) \
-            + ' missing or invalid', 1))
+        MASTER_LOG.append(('INVSYNC Config File Error: ' + str(error) + '. ' \
+            + str(invsync_cfg_f) + ' Missing or Invalid!', 1))
 
     # GET Query Methods
     try:
@@ -184,7 +127,6 @@ def main():
         ydiff = diffgen(nornir_list, xdict)
         ndiff = diffgen(netdisco_list, xdict)
 
-        # WRITE SLACK_LOG to slackpost() function for processing
         if idiff:
             MASTER_LOG.append(('\n** Missing from ISE Inventory:', 1))
             for i in idiff:
@@ -234,6 +176,9 @@ def main():
                 SLACK_LOG.append(line[0])
 
         slackpost_status = slackpost(SLACK_LOG)
+
+        if slackpost_status:
+            print('Posted to Slack')
 
 if __name__ == "__main__":
     main()

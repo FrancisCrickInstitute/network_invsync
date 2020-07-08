@@ -1,12 +1,12 @@
-# Network InvSync Python Script - Verify ISE and YAML Inventories are Synchronised
+# Network InvSync Python Script - Verify ISE, Nornir YAML and NetDisco Inventories are Synchronised
 
-*network_invsync.py* uses an ISE API request to get a list of Network Devices. It also uses NORNIR to get a list of Network Devices configured in the YAML Inventory. A Python DIFF operations is used to compare the lists and post the differences to Slack.
+*network_invsync.py* uses an ISE API, NetDisco API and Nornir YAML query to get a list of Network Devices. A DIFF operations is used to compare the lists and post the differences to Slack.
 
 NOTE: ISE must be configured with a valid ERS Operator Account.
 
 ## Usage
 ```
-python3 network_invsync.py -i {ISE PSN DNS} -s [OPTIONAL]
+python3 network_invsync.py {-d | Debug [OPTIONAL]} {-v | Verbose Debug [OPTIONAL]}
 ```
 
 
@@ -27,7 +27,8 @@ $
 │   │   ├── ise_api.py
 │   │   ├── netdisco_api.py
 │   │   ├── nornir_yml.py
-│   │   ├── nornir_yml.py
+│   │   ├── slackpost.py
+│   │   ├── xtval.py
 │   ├── config/
 │   │   ├── invsync_cfg.json [1]
 │   │   ├── ise_cfg.json [2]
@@ -176,3 +177,7 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 06.07.2020_2
 - Corrected minor typo
+
+### Version 08.07.2020
+- Moved slackpost function to slackpost module.
+- Parsed through PYLINT linter. 
