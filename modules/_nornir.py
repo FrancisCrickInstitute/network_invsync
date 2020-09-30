@@ -14,7 +14,7 @@ from nornir.core.filter import F
 
 pp = pprint.PrettyPrinter()
 
-def nornir_yml(SESSION_TK):
+def nornir(SESSION_TK):
 
     nornir_status = False
     nornir_log = []
@@ -24,7 +24,7 @@ def nornir_yml(SESSION_TK):
 
     print('\n' + '#' * 10 + ' Nornir Inventory Query ' + '#' * 10 + '\n')
 
-    if SESSION_TK['vDEBUG']: # True
+    if SESSION_TK['DEBUG'] == 2: # True
         print('\n***DEBUG Nornir YAML SESSION_TK Received:')
         print(pp.pprint(SESSION_TK))
 
@@ -35,7 +35,7 @@ def nornir_yml(SESSION_TK):
         for i in filter.inventory.hosts.keys():
             nornir_list.append(i)
 
-        if SESSION_TK['bDEBUG']: # True
+        if SESSION_TK['DEBUG'] == 2: # True
             print('\n**DEBUG Nornir YAML List Generated:')
             print(pp.pprint(nornir_list))
 
@@ -43,6 +43,6 @@ def nornir_yml(SESSION_TK):
         nornir_log.append(('Nornir YAML Query Successful', 0))
 
     except Exception as error:
-        nornir_log.append(('Nornir YAML Query Error: ' + str(error), 0))
+        nornir_log.append(('Nornir YAML Query Error: ' + str(error), 1))
 
     return nornir_status, nornir_log, nornir_list

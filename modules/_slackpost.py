@@ -8,6 +8,8 @@ __copyright__ = 'None. Enjoy :-)'
 
 import slack # Required for Slack Post. NOTE: 'pip install slackclient'
 import ssl # Required for Slack Post.
+import json # Required to read Slack config file
+import ipdb # Optional Debug. ipdb.set_trace()
 
 def slackpost(SLACK_LOG):
     ''' Post to Slack Function '''
@@ -29,7 +31,7 @@ def slackpost(SLACK_LOG):
         ssl_context.verify_mode = ssl.CERT_NONE
 
         # Custom Confiuration Files
-        slack_cfg_f = '../network_config/slack_network_auto.json' # Slack Post Config File.
+        slack_cfg_f = '../network_config/network_slack.json' # Slack Post Config File.
 
         # Read *.json config for required tokens
         with open(slack_cfg_f) as slack_f:

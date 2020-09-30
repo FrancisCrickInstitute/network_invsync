@@ -13,7 +13,7 @@ import pprint # Optional to Pretty Print Responses
 import time # Require for requests delay function
 import ipdb # Optional Debug. ipdb.set_trace()
 
-from modules.xtval import xtval
+from modules._xtval import xtval
 
 pp = pprint.PrettyPrinter()
 
@@ -27,25 +27,9 @@ def ise_api(SESSION_TK):
 
     print('\n' + '#' * 10 + ' ISE API Query ' + '#' * 10 + '\n')
 
-    if SESSION_TK['vDEBUG']: # True
+    if SESSION_TK['DEBUG'] == 2:
         print('\n***DEBUG ISE SESSION_TK Received:')
         print(pp.pprint(SESSION_TK))
-
-    # Read .json config for required ISE values.
-    ise_cfg_f = 'config/ise_cfg.json' # Script Config File.
-
-    try:
-        with open(ise_cfg_f) as ise_f:
-            ise_cfg = json.load(ise_f)
-
-        OAUTH = ise_cfg["OAUTH"]
-        URL = ise_cfg['URL']
-        PAGES = ise_cfg['PAGES']
-
-    except Exception as error:
-        ise_log.append(('ISE Error: ' + str(error) + '. ' + str(ise_cfg_f) \
-            + ' missing or invalid', 1))
-        return ise_status, ise_log, ise_list
 
     try:
         # Define Global API POST request values
@@ -53,7 +37,7 @@ def ise_api(SESSION_TK):
         headers = {
           'Accept': 'application/vnd.com.cisco.ise.network.networkdevice.1.1+xml',
           'Accept-Search-Result': 'application/vnd.com.cisco.ise.ers.searchresult.2.0+xm',
-          'Authorization': OAUTH,
+          'Authorization': SESSION_TK['ISE_OAUTH_TOKEN'],
           'cache-control': 'no-cache'
         }
 
@@ -67,9 +51,9 @@ def ise_api(SESSION_TK):
 
         xdoc = []
 
-        for page in range(PAGES):
+        for page in range(SESSION_TK['ISE_PAGES']):
 
-            url = "https://" + str(URL) + ":9060/ers/config/networkdevice?size=100&page=" + str(page+1)
+            url = "https://" + str(SESSION_TK['ISE_URL']) + ":9060/ers/config/networkdevice?size=100&page=" + str(page+1)
 
             # POST GET Response. User verify=False to disable SSL wanrings
             response = requests.request("GET", url, headers=headers, data=payload, verify=False)
@@ -87,7 +71,7 @@ def ise_api(SESSION_TK):
             # Convert to Python Dict {} and append to xdoc []
             xdoc.append(xmltodict.parse(response.text.encode('utf8')))
 
-        if SESSION_TK['vDEBUG']: # True
+        if SESSION_TK['DEBUG'] == 2: # True
             print('\n***DEBUG ISE GET Response:')
             print(pp.pprint(xdoc))
 
@@ -102,7 +86,7 @@ def ise_api(SESSION_TK):
             if any(iPAT in host for iPAT in SESSION_TK['iPATTERN']) and not any(xPAT in host for xPAT in SESSION_TK['xPATTERN']):
                 ise_list.append(host)
 
-        if SESSION_TK['bDEBUG']: # True
+        if SESSION_TK['DEBUG'] >= 1:
             print('\n**DEBUG ISE Filtered List Generated:')
             print(pp.pprint(ise_list))
 
