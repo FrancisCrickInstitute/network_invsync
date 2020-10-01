@@ -185,4 +185,7 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 - Parsed through PYLINT linter.
 
 ### Version 30.09.2020
-- Major rewrite to align with network_vault.json centralised credential repo. 
+- Major rewrite to align with network_vault.json centralised credential repo.
+
+### Version 01.10.2020
+- Minor cleanup
