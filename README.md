@@ -6,7 +6,7 @@ NOTE: ISE must be configured with a valid ERS Operator Account.
 
 ## Usage
 ```
-python3 network_invsync.py {-d | Debug [OPTIONAL]} {-v | Verbose Debug [OPTIONAL]}
+python3 network_invsync.py
 ```
 
 
@@ -189,3 +189,6 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 01.10.2020
 - Minor cleanup
+
+### Version 01.10.2020_2
+- Captured System username and hostname and included in log.

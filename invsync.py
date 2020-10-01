@@ -9,7 +9,8 @@ __copyright__ = 'None. Enjoy :-)'
 from argparse import ArgumentParser # Required for Command Line Argument parsing
 
 import json # Required to process *.json ISE config file and Slack Posting
-import os # Required for Log File Writing
+import os # Required for Log File Writing and get users home director
+import socket # Required to get and log hostname
 import datetime # Required for Start/ End time
 import urllib3 # Required to disable SSL Warnings
 import sys # Required for Python version check
@@ -34,7 +35,7 @@ if (sys.version_info < (3, 6)):
 
 def main():
     '''
-    Main SnapDiff Function
+    Main Function
     '''
 
     # LOG Script Start Date/ Time
@@ -44,7 +45,10 @@ def main():
     # Used in node_*node_c3k_collection.py to create unique repo folder.
     repo_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
-    MASTER_LOG.append(('InvSync Was Started @ ' + str(start_time) + '\n', 1))
+    homedir = os.path.expanduser("~")
+    hostname = socket.gethostname()
+
+    MASTER_LOG.append(('InvSync Python script started @ ' + str(start_time) + '\n' + ' by ' + str(homedir) + ' on ' + str(hostname), 1))
 
     while True:
         try:
@@ -133,18 +137,24 @@ def main():
         except Exception as error:
             MASTER_LOG.append(('InvSync Error: ' + str(error), 1))
 
+
+    log_time = start_time.strftime('%Y_%m_%d_%H_%M_%S')
+    end_time = datetime.datetime.now()
+    diff_time = end_time - start_time
+
+    MASTER_LOG.append(('\nInvSync Python script ended @ ' + str(diff_time) + ' ~ Elapsed: ' + str(diff_time) + '\n', 1))
+
     # WRITE MASTER_LOG to file
     # Make a folder in script working directory to store results
     logdir = '../LOGS/network_invsync_log/'
     # Modify the time stamp to not contain special characters (: & /)
-    log_time = start_time.strftime('%Y_%m_%d_%H_%M_%S')
 
     try:
         os.makedirs(logdir)
     except FileExistsError:
         pass # Folder exisits so nothing to do
 
-    logfile = open(logdir + str(log_time) + '.log', 'w')
+    logfile = open(logdir + str(repo_time) + '.log', 'w')
 
     for line in MASTER_LOG:
         logfile.write(str(line[0]) + '\n')
