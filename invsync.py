@@ -43,7 +43,7 @@ def main():
 
     # Date and Time in simple string format (YYYYMMDDHHMMSS).
     # Used in node_*node_c3k_collection.py to create unique repo folder.
-    repo_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    repo_time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
     homedir = os.path.expanduser("~")
     hostname = socket.gethostname()
@@ -161,7 +161,7 @@ def main():
 
     logfile.close()
 
-    MASTER_LOG.append(('\nMASTER_LOG Saved To ' + logdir + str(log_time) + '.log\n', 1))
+    MASTER_LOG.append(('\nMASTER_LOG Saved To ' + logdir + str(repo_time) + '.log\n', 1))
 
     # Print all lines in MASTER_LOG
     for line in MASTER_LOG:
