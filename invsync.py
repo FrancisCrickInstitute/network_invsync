@@ -17,12 +17,14 @@ import sys # Required for Python version check
 import ipdb # Optional Debug. ipdb.set_trace()
 
 # Import custom modules
-from modules._session_tk import session_tk
 from modules._diffgen import diffgen
 from modules._ise_api import ise_api
-from modules._nornir import nornir
 from modules._netdisco_api import netdisco_api
-from modules._slackpost import slackpost
+from modules._nornir_yml import nornir_yml
+from common._slack_api import slack_api
+from common._session_tk import Session_tk # Import Session Token Class
+SESSION_TK = Session_tk() # Define object from Class
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -51,92 +53,76 @@ def main():
     MASTER_LOG.append(('InvSync Python script started @ ' + str(start_time) + '\n' + ' by ' + str(homedir) + ' on ' + str(hostname), 1))
 
     while True:
-        try:
 
-            # Generate SESSION_TK
-            session_tk_status, session_tk_log, SESSION_TK = session_tk()
+        # Nornir YAML Query
+        nornir_yml_status, nornir_yml_log, nornir_yml_list = nornir_yml()
 
-            for line in session_tk_log:
-                MASTER_LOG.append(line)
+        for line in nornir_yml_log:
+            MASTER_LOG.append(line)
 
-            if not session_tk_status:
-                break
-
-            if SESSION_TK['DEBUG'] == 2:
-                print('\n**DEBUG: SESSION_TK:')
-                print(SESSION_TK)
-
-            # ISE API Query
-            ise_status, ise_log, ise_list = ise_api(SESSION_TK)
-
-            for line in ise_log:
-                MASTER_LOG.append(line)
-
-            if not ise_status: # False
-                break
-
-            # Nornir YAML Query
-            nornir_status, nornir_log, nornir_list = nornir(SESSION_TK)
-
-            for line in nornir_log:
-                MASTER_LOG.append(line)
-
-            if not nornir_status: # False
-                break
-
-            # NetDisco API Query
-            netdisco_status, netdisco_log, netdisco_list = netdisco_api(SESSION_TK)
-
-            for line in netdisco_log:
-                MASTER_LOG.append(line)
-
-            if not netdisco_status: # False
-                break
-
-            # DIFF Method
-            xdict = {} # Use a dict key to dedup(licate)
-
-            for i in ise_list:
-                xdict[i] = ''
-
-            for y in nornir_list:
-                xdict[y] = ''
-
-            for n in netdisco_list:
-                xdict[n] = ''
-
-            # xdict {} should now contain all nodes across all methods
-
-            # Call diffgen Module
-            idiff = diffgen(ise_list, xdict)
-            ydiff = diffgen(nornir_list, xdict)
-            ndiff = diffgen(netdisco_list, xdict)
-
-            MASTER_LOG.append(('\n*** RESULTS ***', 1))
-
-            if idiff:
-                MASTER_LOG.append(('\n' + u'\u2717' + ' Missing from ISE Inventory ' + u'\u2717', 1))
-            for i in idiff:
-                MASTER_LOG.append((i, 1))
-
-            if ydiff:
-                MASTER_LOG.append(('\n' + u'\u2717' + ' Missing from YAML Inventory ' + u'\u2717', 1))
-            for y in ydiff:
-                MASTER_LOG.append((y, 1))
-
-            if ndiff:
-                MASTER_LOG.append(('\n' + u'\u2717' + ' Missing from NetDisco Inventory ' + u'\u2717', 1))
-            for n in ndiff:
-                MASTER_LOG.append((n, 1))
-
-            if not idiff and not ydiff and not ndiff:
-                MASTER_LOG.append(('\n' + u'\u2714' + ' No Difference Found Between YAML, ISE and NetDisco Inventory', 1))
-
+        if not nornir_yml_status: # False
             break
 
-        except Exception as error:
-            MASTER_LOG.append(('InvSync Error: ' + str(error), 1))
+        # ISE API Query
+        ise_api_status, ise_api_log, ise_api_list = ise_api()
 
+        for line in ise_api_log:
+            MASTER_LOG.append(line)
+
+        if not ise_api_status: # False
+            break
+
+        # NetDisco API Query
+        netdisco_api_status, netdisco_api_log, netdisco_api_list = netdisco_api()
+
+        for line in netdisco_api_log:
+            MASTER_LOG.append(line)
+
+        if not netdisco_api_status: # False
+            break
+
+        # DIFF Method
+        xdict = {} # Use a dict key to dedup(licate)
+
+        for y in nornir_yml_list:
+            xdict[y] = ''
+
+        for i in ise_api_list:
+            xdict[i] = ''
+
+        for n in netdisco_api_list:
+            xdict[n] = ''
+
+        # xdict {} should now contain all nodes across all methods
+
+        # Call diffgen Module
+        idiff = diffgen(ise_api_list, xdict)
+        ydiff = diffgen(nornir_yml_list, xdict)
+        ndiff = diffgen(netdisco_api_list, xdict)
+
+        MASTER_LOG.append(('\n*** RESULTS ***', 1))
+
+        ipdb.set_trace()
+        
+        if idiff:
+            MASTER_LOG.append(('\n' + u'\u2717' + ' Missing from ISE Inventory ' + u'\u2717', 1))
+        for i in idiff:
+            MASTER_LOG.append((i, 1))
+
+        if ydiff:
+            MASTER_LOG.append(('\n' + u'\u2717' + ' Missing from YAML Inventory ' + u'\u2717', 1))
+        for y in ydiff:
+            MASTER_LOG.append((y, 1))
+
+        if ndiff:
+            MASTER_LOG.append(('\n' + u'\u2717' + ' Missing from NetDisco Inventory ' + u'\u2717', 1))
+        for n in ndiff:
+            MASTER_LOG.append((n, 1))
+
+        if not idiff and not ydiff and not ndiff:
+            MASTER_LOG.append(('\n' + u'\u2714' + ' No Difference Found Between YAML, ISE and NetDisco Inventory', 1))
+
+        break
 
     log_time = start_time.strftime('%Y_%m_%d_%H_%M_%S')
     end_time = datetime.datetime.now()
@@ -169,13 +155,13 @@ def main():
             print(line[0])
 
     # POST to Slack MASTER_LOG lines flagged with 1
-    if SESSION_TK['SLACKPOST'] == 1: # True
+    if SESSION_TK.slack_post == 1: # True
         SLACK_LOG = []
         for line in MASTER_LOG:
             if line[1] == 1:
                 SLACK_LOG.append(line[0])
 
-        slackpost_status = slackpost(SLACK_LOG)
+        slackpost_status = slack_api(SLACK_LOG, end_time)
 
         if slackpost_status:
             print('Posted to Slack')

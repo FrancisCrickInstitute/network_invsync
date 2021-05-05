@@ -14,22 +14,18 @@ import time # Require for requests delay function
 import ipdb # Optional Debug. ipdb.set_trace()
 
 from modules._xtval import xtval
+from common._session_tk import Session_tk # Import Session Token Class
+SESSION_TK = Session_tk() # Define object from Class
 
 pp = pprint.PrettyPrinter()
 
-def ise_api(SESSION_TK):
+def ise_api():
 
-    ise_status = False
-    ise_log = []
-    ise_list = []
+    ise_api_status = False
+    ise_api_log = []
+    ise_api_list = []
 
-    ise_log.append(('ISE API Query Initialised...', 0))
-
-    print('\n' + '#' * 10 + ' ISE API Query ' + '#' * 10 + '\n')
-
-    if SESSION_TK['DEBUG'] == 2:
-        print('\n***DEBUG ISE SESSION_TK Received:')
-        print(pp.pprint(SESSION_TK))
+    ise_api_log.append(('ISE API Query Initialised...', 0))
 
     try:
         # Define Global API POST request values
@@ -37,7 +33,7 @@ def ise_api(SESSION_TK):
         headers = {
           'Accept': 'application/vnd.com.cisco.ise.network.networkdevice.1.1+xml',
           'Accept-Search-Result': 'application/vnd.com.cisco.ise.ers.searchresult.2.0+xm',
-          'Authorization': SESSION_TK['ISE_OAUTH_TOKEN'],
+          'Authorization': SESSION_TK.ise_oauth_token,
           'cache-control': 'no-cache'
         }
 
@@ -51,9 +47,9 @@ def ise_api(SESSION_TK):
 
         xdoc = []
 
-        for page in range(SESSION_TK['ISE_PAGES']):
+        for page in range(SESSION_TK.ise_pages):
 
-            url = "https://" + str(SESSION_TK['ISE_URL']) + ":9060/ers/config/networkdevice?size=100&page=" + str(page+1)
+            url = "https://" + str(SESSION_TK.ise_url) + ":9060/ers/config/networkdevice?size=100&page=" + str(page+1)
 
             # POST GET Response. User verify=False to disable SSL wanrings
             response = requests.request("GET", url, headers=headers, data=payload, verify=False)
@@ -71,7 +67,7 @@ def ise_api(SESSION_TK):
             # Convert to Python Dict {} and append to xdoc []
             xdoc.append(xmltodict.parse(response.text.encode('utf8')))
 
-        if SESSION_TK['DEBUG'] == 2: # True
+        if SESSION_TK.debug == 2: # True
             print('\n***DEBUG ISE GET Response:')
             print(pp.pprint(xdoc))
 
@@ -80,20 +76,20 @@ def ise_api(SESSION_TK):
         hosts = xtval(xdoc, '@name')
 
         # Loop through hosts. If host name contains iPATTERN and not xPATTERN append
-        # to ise_list []
+        # to ise_api_list []
 
         for host in hosts:
-            if any(iPAT in host for iPAT in SESSION_TK['iPATTERN']) and not any(xPAT in host for xPAT in SESSION_TK['xPATTERN']):
-                ise_list.append(host)
+            if any(iPAT in host for iPAT in SESSION_TK.ipattern) and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
+                ise_api_list.append(host)
 
-        if SESSION_TK['DEBUG'] >= 1:
+        if SESSION_TK.debug >= 1:
             print('\n**DEBUG ISE Filtered List Generated:')
-            print(pp.pprint(ise_list))
+            print(pp.pprint(ise_api_list))
 
-        ise_log.append(('ISE API Successful', 0))
-        ise_status = True
+        ise_api_log.append(('ISE API Successful', 0))
+        ise_api_status = True
 
     except Exception as error:
-        ise_log.append(('ISE API Error: ' + str(error), 1))
+        ise_api_log.append(('ISE API Error: ' + str(error), 1))
 
-    return ise_status, ise_log, ise_list
+    return ise_api_status, ise_api_log, ise_api_list

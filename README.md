@@ -22,15 +22,17 @@ $
 .
 ├── network_invsync/
 │   ├── invsync.py
+│   ├── common/
+│   │   ├── _slack_api.py
+│   │   ├── _session_tk.py
 │   ├── modules/
 │   │   ├── _diffgen.py
 │   │   ├── _ise_api.py
 │   │   ├── _netdisco_api.py
-│   │   ├── _nornir.py
-│   │   ├── _slackpost.py
+│   │   ├── _nornir_yml.py
 │   │   ├── _xtval.py
 │   ├── config/
-│   │   ├── invsync_cfg.json [1]
+│   │   ├── app_cfg.json [1]
 │   │   ├── nornir_cfg.json [2]
 │   ├── README.md [THIS README]
 ├── network_inventory/
@@ -39,7 +41,6 @@ $
 │   ├── defaults.yaml
 ├── network_config/
 │   ├── network_vault.json [3]
-│   ├── network_slack.json [4]
 
 ```
 
@@ -47,20 +48,20 @@ $
 
 ```
 {
-    "iPATTERN": ["ROUTER-A","ROUTER-B","SWITCH-C"],
-    "xPATTERN": ["ROUTER-X","ROUTER-Y","SWITCH-Z"],
-    "dSTRIP": ["mycompany.mydomain"]
-    "yFILTER": ["YAML Group/ Host"],
-    "SLACKPOST": {0 = No slack Post, 1 = Slack Post},
+    "IPATTERN": ["ROUTER-A","ROUTER-B","SWITCH-C"],
+    "XPATTERN": ["ROUTER-X","ROUTER-Y","SWITCH-Z"],
+    "DOM_STRIP": ["mycompany.mydomain"]
+    "YAML_FILTERFILTER": ["YAML Group/ Host"],
+    "SLACK_POST": {0 = No slack Post, 1 = Slack Post},
     "DEBUG": {0 = Debug Off, 1 = Basic Debug, 2 = Verbose Debug}
 }
 ```
 
 ... where:<br />
-*iPATTERN* is the a pattern to include (i.e. ["A", "B", "C"] will match Router-A, Router-B, Router-C) and add to the list to be DIFF'ed.<br />
-*xPATTERN* is the a pattern to exclude (i.e. ["X", "Y", "Z"] will match Router-X, Router-Y, Router-Z) and NOT add to the list to be DIFF'ed.<br />
-*dSTRIP* is any domain suffix to strip from hostnames pulled from ISE or NetDisco to maintain parity with Nornir YAML Inventory.<br />
-*yFILTER* is the YAML filter used by NORNIR to filter the hosts.yaml [4]. <br />
+*IPATTERN* is the a pattern to include (i.e. ["A", "B", "C"] will match Router-A, Router-B, Router-C) and add to the list to be DIFF'ed.<br />
+*XPATTERN* is the a pattern to exclude (i.e. ["X", "Y", "Z"] will match Router-X, Router-Y, Router-Z) and NOT add to the list to be DIFF'ed.<br />
+*DOM_STRIP* is any domain suffix to strip from hostnames pulled from ISE or NetDisco to maintain parity with Nornir YAML Inventory.<br />
+*YAML_FILTER* is the YAML filter used by NORNIR to filter the hosts.yaml [4]. <br />
 
 - *nornir_cfg.yaml* [2] A YAML Configuration file is loaded . It references the .yaml files in *network_inventory* folder. The file also defines the number of concurrent connections supported.
 
@@ -103,17 +104,6 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 *ISE_PAGES* is the ISE page limitation. To calculate, take the total number of Network Devices and divide by 100 (e.g. for 191, pages will be 2).
 *NETDISCO_USERNAME* & *NETDISCO_PASSWORD* are valid NetDisco credentials
 *NETDISCO_URL* is the URL of NetDisco & TCP Port (if applicable). Go to http://{URL}/swagger-ui/ to get started.
-
-- *network_slack.json* [4] Where SLACKPOST = 1 in , expectation is there is a *network_slack.json* file in *network_config* folder. This defines the OAUTH_TOKEN and CHANNEL required to post to your Slack environment. Expected format is:
-
-```
-{
-  "OAUTH_TOKEN": "<REMOVED>",
-  "WEBHOOK": "https://hooks.slack.com/services/<REMOVED>",
-  "USE_WEBHOOK": 0,
-  "CHANNEL": <SLACK CHANNEL>"
-}
-```
 
 ## Change History
 
@@ -192,3 +182,9 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 01.10.2020_2
 - Captured System username and hostname and included in log.
+
+### Version 12.10.2020
+- Updated SESSION_TK YAML Filter Reference from yFILTER to YAMLF.
+
+### Version 05.05.2021
+- Major rewrite to align structure with team practices. 
