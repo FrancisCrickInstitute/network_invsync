@@ -21,7 +21,7 @@ class Session_tk:
 
             # ...
             # Vault
-            self.log.append(('SESSION_TK: Session Token Vault Initialised...', 5))
+            self.log.append(('%common/_session_tk','Session Token Vault Initialised...', 5))
 
             network_vault_f = '../network_config/network_vault.json'
 
@@ -36,12 +36,17 @@ class Session_tk:
             self.ise_oauth_token = network_vault['ISE_OAUTH_TOKEN']
             self.slack_oauth_token = network_vault['SLACK_OAUTH_TOKEN']
             self.slack_channel = network_vault['SLACK_CHANNEL']
-            
-            self.log.append(('SESSION_TK: Session Token Vault Successful', 5))
 
+            self.log.append(('%common/_session_tk', 'Session Token Vault Successful', 5))
+
+        except Exception as error:
+            self.log.append(('%common/_session_tk', 'Session Token Vault Error: ' + str(error), 4))
+            self.log.append(('%common/_session_tk', 'Session Token Vault Error: Check Variables Exist!' , 4))
+
+        try:
             # ...
             # App Config
-            self.log.append(('SESSION_TK: Session Token App Config Initialised...', 5))
+            self.log.append(('%common/_session_tk', 'Session Token App Config Initialised...', 5))
 
             app_cfg_f = 'config/app_cfg.json'
 
@@ -55,12 +60,12 @@ class Session_tk:
             self.ipattern = app_cfg['IPATTERN']
             self.xpattern = app_cfg['XPATTERN']
 
-            self.log.append(('SESSION_TK: Session Token App Config Successful', 5))
+            self.log.append(('%common/_session_tk', 'Session Token App Config Successful', 5))
 
             # ...
             # OK
             self.status = True
 
         except Exception as error:
-            self.log.append(('SESSION_TK: Error: ' + str(error), 4))
-            self.log.append(('SESSION_TK: Vault or Cfg is Missing Above Value!' , 4))
+            self.log.append(('%common/_session_tk', 'Session Token App Config Error: ' + str(error), 4))
+            self.log.append(('%common/_session_tk', 'Session Token App Config Error: Check Variables Exist!' , 4))

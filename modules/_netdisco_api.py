@@ -24,7 +24,7 @@ def netdisco_api():
     netdisco_api_log = []
     netdisco_api_list = []
 
-    netdisco_api_log.append(('NetDisco API Query Initialised...', 0))
+    netdisco_api_log.append(('%modules/_netdisco_api', 'NetDisco API Query Initialised...', 5))
 
     try:
         #Get API KEY with POST request . Valid for 3600 seconds
@@ -75,11 +75,11 @@ def netdisco_api():
             print('\n**DEBUG: NetDisco Filtered List Generated:')
             print(pp.pprint(netdisco_api_list))
 
-        netdisco_api_log.append(('NetDisco API Query Successful', 0))
+        netdisco_api_log.append(('%modules/_netdisco_api','NetDisco API Query Successful', 5))
         netdisco_api_status = True
 
     except Exception as error:
-        netdisco_api_log.append(('NetDisco API Error: ' + str(error) + \
-            ". API error occasionally occurs for no reason. NetDisco inventory check skipped in this run. Re-run recommended!", 1))
+        netdisco_api_log.append(('%modules/_netdisco_api','NetDisco API Error: ' + str(error) + \
+            ". API error occasionally occurs for no reason. NetDisco inventory check skipped in this run. Re-run recommended!", 4))
 
     return netdisco_api_status, netdisco_api_log, netdisco_api_list

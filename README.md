@@ -187,4 +187,7 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 - Updated SESSION_TK YAML Filter Reference from yFILTER to YAMLF.
 
 ### Version 05.05.2021
-- Major rewrite to align structure with team practices. 
+- Major rewrite to align structure with team practices.
+
+### Version 05.05.2021_2
+- Cleaned up logging.

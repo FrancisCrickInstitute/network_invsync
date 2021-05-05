@@ -25,7 +25,7 @@ def ise_api():
     ise_api_log = []
     ise_api_list = []
 
-    ise_api_log.append(('ISE API Query Initialised...', 0))
+    ise_api_log.append(('%modules/_ise_api', 'ISE API Query Initialised...', 5))
 
     try:
         # Define Global API POST request values
@@ -86,10 +86,10 @@ def ise_api():
             print('\n**DEBUG ISE Filtered List Generated:')
             print(pp.pprint(ise_api_list))
 
-        ise_api_log.append(('ISE API Successful', 0))
+        ise_api_log.append(('%modules/_ise_api', 'ISE API Successful', 5))
         ise_api_status = True
 
     except Exception as error:
-        ise_api_log.append(('ISE API Error: ' + str(error), 1))
+        ise_api_log.append(('%modules/_ise_api','ISE API Error: ' + str(error), 4))
 
     return ise_api_status, ise_api_log, ise_api_list

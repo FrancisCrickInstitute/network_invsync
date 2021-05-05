@@ -23,7 +23,7 @@ def nornir_yml():
     nornir_yml_log = []
     nornir_yml_list = []
 
-    nornir_yml_log.append(('Nornir YAML Query Initialised...', 0))
+    nornir_yml_log.append(('%modules/_nornir_yml','Nornir YAML Query Initialised...', 5))
 
     if SESSION_TK.debug == 2: # True
         print('\n***DEBUG Nornir YAML SESSION_TK Received:')
@@ -41,9 +41,9 @@ def nornir_yml():
             print(pp.pprint(nornir_yml_list))
 
         nornir_yml_status = True
-        nornir_yml_log.append(('Nornir YAML Query Successful', 0))
+        nornir_yml_log.append(('%modules/_nornir_yml','Nornir YAML Query Successful', 5))
 
     except Exception as error:
-        nornir_yml_log.append(('Nornir YAML Query Error: ' + str(error), 1))
+        nornir_yml_log.append(('%modules/_ise_api','Nornir YAML Query Error: ' + str(error), 4))
 
     return nornir_yml_status, nornir_yml_log, nornir_yml_list

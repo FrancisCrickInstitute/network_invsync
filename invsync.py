@@ -50,7 +50,8 @@ def main():
     homedir = os.path.expanduser("~")
     hostname = socket.gethostname()
 
-    MASTER_LOG.append(('InvSync Python script started @ ' + str(start_time) + '\n' + ' by ' + str(homedir) + ' on ' + str(hostname), 1))
+    MASTER_LOG.append(('%invsync','InvSync Python script started @ ' + \
+        str(start_time) + ' by ' + str(homedir) + ' on ' + str(hostname), 5))
 
     while True:
 
@@ -96,31 +97,29 @@ def main():
         # xdict {} should now contain all nodes across all methods
 
         # Call diffgen Module
-        idiff = diffgen(ise_api_list, xdict)
         ydiff = diffgen(nornir_yml_list, xdict)
+        idiff = diffgen(ise_api_list, xdict)
         ndiff = diffgen(netdisco_api_list, xdict)
 
-        MASTER_LOG.append(('\n*** RESULTS ***', 1))
+        MASTER_LOG.append(('%invsync','*** RESULTS ***', 5))
 
-        ipdb.set_trace()
-        
         if idiff:
-            MASTER_LOG.append(('\n' + u'\u2717' + ' Missing from ISE Inventory ' + u'\u2717', 1))
+            MASTER_LOG.append(('%invsync','\n' + u'\u2717' + ' Missing from ISE Inventory ' + u'\u2717', 4))
         for i in idiff:
-            MASTER_LOG.append((i, 1))
+            MASTER_LOG.append(('%invsync',i, 4))
 
         if ydiff:
-            MASTER_LOG.append(('\n' + u'\u2717' + ' Missing from YAML Inventory ' + u'\u2717', 1))
+            MASTER_LOG.append(('%invsync','\n' + u'\u2717' + ' Missing from YAML Inventory ' + u'\u2717', 4))
         for y in ydiff:
-            MASTER_LOG.append((y, 1))
+            MASTER_LOG.append(('%invsync',y, 4))
 
         if ndiff:
-            MASTER_LOG.append(('\n' + u'\u2717' + ' Missing from NetDisco Inventory ' + u'\u2717', 1))
+            MASTER_LOG.append(('%invsync','\n' + u'\u2717' + ' Missing from NetDisco Inventory ' + u'\u2717', 4))
         for n in ndiff:
-            MASTER_LOG.append((n, 1))
+            MASTER_LOG.append(('%invsync',n, 4))
 
         if not idiff and not ydiff and not ndiff:
-            MASTER_LOG.append(('\n' + u'\u2714' + ' No Difference Found Between YAML, ISE and NetDisco Inventory', 1))
+            MASTER_LOG.append(('%invsync','\n' + u'\u2714' + ' No Difference Found Between YAML, ISE and NetDisco Inventory', 4))
 
         break
 
@@ -128,7 +127,7 @@ def main():
     end_time = datetime.datetime.now()
     diff_time = end_time - start_time
 
-    MASTER_LOG.append(('\nInvSync Python script ended @ ' + str(diff_time) + ' ~ Elapsed: ' + str(diff_time) + '\n', 1))
+    MASTER_LOG.append(('%invsync','\nInvSync Python script ended @ ' + str(diff_time) + ' ~ Elapsed: ' + str(diff_time) + '\n', 5))
 
     # WRITE MASTER_LOG to file
     # Make a folder in script working directory to store results
@@ -143,27 +142,26 @@ def main():
     logfile = open(logdir + str(repo_time) + '.log', 'w')
 
     for line in MASTER_LOG:
-        logfile.write(str(line[0]) + '\n')
+        logfile.write(str(line) + '\n')
 
     logfile.close()
 
-    MASTER_LOG.append(('\nMASTER_LOG Saved To ' + logdir + str(repo_time) + '.log\n', 1))
+    MASTER_LOG.append(('%invsync','\nMASTER_LOG Saved To ' + logdir + str(repo_time) + '.log\n', 5))
 
     # Print all lines in MASTER_LOG
     for line in MASTER_LOG:
-        if line[1] >= 0:
-            print(line[0])
+        print(line)
 
     # POST to Slack MASTER_LOG lines flagged with 1
     if SESSION_TK.slack_post == 1: # True
         SLACK_LOG = []
         for line in MASTER_LOG:
-            if line[1] == 1:
-                SLACK_LOG.append(line[0])
+            if line[2] <= 4:
+                SLACK_LOG.append(line[1])
 
-        slackpost_status = slack_api(SLACK_LOG, end_time)
+        slack_api_status = slack_api(SLACK_LOG, end_time)
 
-        if slackpost_status:
+        if slack_api_status:
             print('Posted to Slack')
 
 if __name__ == "__main__":
