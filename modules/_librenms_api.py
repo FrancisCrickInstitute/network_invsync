@@ -1,5 +1,5 @@
 '''
-LibraNMS API Module to Query Network Devices
+Librenms API Module to Query Network Devices
 '''
 #!/usr/bin/env python3
 
@@ -18,23 +18,23 @@ SESSION_TK = Session_tk() # Define object from Class
 
 pp = pprint.PrettyPrinter()
 
-def libranms_api():
+def librenms_api():
 
-    libranms_api_status = False
-    libranms_api_log = []
-    libranms_api_list = []
+    librenms_api_status = False
+    librenms_api_log = []
+    librenms_api_list = []
 
-    libranms_api_log.append(('%modules/_libranms_api', 'LibraNMS API Query Initialised...', 5))
+    librenms_api_log.append(('%modules/_librenms_api', 'librenms API Query Initialised...', 5))
 
     try:
         # Define Global API POST request values
         payload = {}
         headers = {
-          'X-Auth-Token': SESSION_TK.libranms_xauth_token,
+          'X-Auth-Token': SESSION_TK.librenms_xauth_token,
           'cache-control': 'no-cache',
           'Accept': 'application/json'
         }
-        url = "http://" + str(SESSION_TK.libranms_url) + '/api/v0/devices'
+        url = "http://" + str(SESSION_TK.librenms_url) + '/api/v0/devices'
 
         # POST GET Response. User verify=False to disable SSL wanrings
         response = requests.request("GET", url, headers=headers, data=payload, verify=False)
@@ -52,12 +52,12 @@ def libranms_api():
         for item in xdict['devices']:
             if item['type'] == 'network':
                 stripped = item['hostname'].rstrip(str(SESSION_TK.dom_strip))
-                libranms_api_list.append(stripped.upper())
-                
-        libranms_api_log.append(('%modules/_libranms_api', 'LibraNMS API Successful', 5))
-        libranms_api_status = True
+                librenms_api_list.append(stripped.upper())
+
+        librenms_api_log.append(('%modules/_librenms_api', 'librenms API Successful', 5))
+        librenms_api_status = True
 
     except Exception as error:
-        libranms_api_log.append(('%modules/_libranms_api','LibraNMS API Error: ' + str(error), 4))
+        librenms_api_log.append(('%modules/_librenms_api','librenms API Error: ' + str(error), 4))
 
-    return libranms_api_status, libranms_api_log, libranms_api_list
+    return librenms_api_status, librenms_api_log, librenms_api_list

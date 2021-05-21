@@ -34,8 +34,8 @@ class Session_tk:
             self.ise_url = network_vault['ISE_URL']
             self.ise_pages = network_vault['ISE_PAGES']
             self.ise_oauth_token = network_vault['ISE_OAUTH_TOKEN']
-            self.libranms_url = network_vault['LIBRANMS_URL']
-            self.libranms_xauth_token = network_vault['LIBRANMS_XAUTH_TOKEN']
+            self.librenms_url = network_vault['LIBRENMS_URL']
+            self.librenms_xauth_token = network_vault['LIBRENMS_XAUTH_TOKEN']
             self.slack_oauth_token = network_vault['SLACK_OAUTH_TOKEN']
             self.slack_channel = network_vault['SLACK_CHANNEL']
 
