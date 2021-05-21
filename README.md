@@ -196,4 +196,4 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 - Added LibraNMS inventory sync function.
 
 ### Version 21.05.2021_2
-- Misspelt LibreNMS and LibraNMS :-( Corrected throughout.  
+- Misspelt LibreNMS as LibraNMS :-( Corrected throughout.  
