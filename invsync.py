@@ -20,6 +20,7 @@ import ipdb # Optional Debug. ipdb.set_trace()
 from modules._diffgen import diffgen
 from modules._ise_api import ise_api
 from modules._netdisco_api import netdisco_api
+from modules._libranms_api import libranms_api
 from modules._nornir_yml import nornir_yml
 from common._slack_api import slack_api
 from common._session_tk import Session_tk # Import Session Token Class
@@ -82,6 +83,15 @@ def main():
         if not netdisco_api_status: # False
             break
 
+        # LibraNMS API Query
+        libranms_api_status, libranms_api_log, libranms_api_list = libranms_api()
+
+        for line in libranms_api_log:
+            MASTER_LOG.append(line)
+
+        if not libranms_api_status: # False
+            break
+
         # DIFF Method
         xdict = {} # Use a dict key to dedup(licate)
 
@@ -94,12 +104,16 @@ def main():
         for n in netdisco_api_list:
             xdict[n] = ''
 
+        for n in libranms_api_list:
+            xdict[n] = ''
+
         # xdict {} should now contain all nodes across all methods
 
         # Call diffgen Module
         ydiff = diffgen(nornir_yml_list, xdict)
         idiff = diffgen(ise_api_list, xdict)
         ndiff = diffgen(netdisco_api_list, xdict)
+        ldiff = diffgen(libranms_api_list, xdict)
 
         MASTER_LOG.append(('%invsync','*** RESULTS ***', 5))
 
@@ -118,7 +132,13 @@ def main():
         for n in ndiff:
             MASTER_LOG.append(('%invsync',n, 4))
 
-        if not idiff and not ydiff and not ndiff:
+        if ldiff:
+            MASTER_LOG.append(('%invsync','\n' + u'\u2717' + ' Missing from LibraNMS Inventory ' + u'\u2717', 4))
+        for n in ldiff:
+            MASTER_LOG.append(('%invsync',n, 4))
+
+
+        if not idiff and not ydiff and not ndiff and not ldiff:
             MASTER_LOG.append(('%invsync','\n' + u'\u2714' + ' No Difference Found Between YAML, ISE and NetDisco Inventory', 4))
 
         break
