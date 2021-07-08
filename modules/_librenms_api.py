@@ -51,8 +51,10 @@ def librenms_api():
 
         for item in xdict['devices']:
             if item['type'] == 'network':
-                stripped = item['hostname'].rstrip(str(SESSION_TK.dom_strip))
-                librenms_api_list.append(stripped.upper())
+                if any(iPAT in item['hostname'].upper() for iPAT in SESSION_TK.ipattern) \
+                    and not any(xPAT in item['hostname'].upper() for xPAT in SESSION_TK.xpattern):
+                    stripped = item['hostname'].rstrip(str(SESSION_TK.dom_strip))
+                    librenms_api_list.append(stripped.upper())
 
         librenms_api_log.append(('%modules/_librenms_api', 'librenms API Successful', 5))
         librenms_api_status = True

@@ -197,3 +197,6 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 21.05.2021_2
 - Misspelt LibreNMS as LibraNMS :-( Corrected throughout.  
+
+### Version 08.07.2021
+- Updated LibreNMS module to correctly handle iPattern and xPattern of hostname to be included and excluded from Invertory Sync. 

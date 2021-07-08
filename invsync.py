@@ -104,8 +104,8 @@ def main():
         for n in netdisco_api_list:
             xdict[n] = ''
 
-        for n in librenms_api_list:
-            xdict[n] = ''
+        for l in librenms_api_list:
+            xdict[l] = ''
 
         # xdict {} should now contain all nodes across all methods
 
