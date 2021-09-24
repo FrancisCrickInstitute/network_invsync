@@ -199,4 +199,8 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 - Misspelt LibreNMS as LibraNMS :-( Corrected throughout.  
 
 ### Version 08.07.2021
-- Updated LibreNMS module to correctly handle iPattern and xPattern of hostname to be included and excluded from Invertory Sync. 
+- Updated LibreNMS module to correctly handle iPattern and xPattern of hostname to be included and excluded from Invertory Sync.
+
+### Version 24.09.2021
+- Updated LibreNMS module so it matches on 'network', 'firewall' and 'wireless' device type, not just 'network'.
+- Updated LibreNMS, NetDisco and ISE module so hostname is partitioned into component parts hostname.company.domain any only capture hostname. Using domain stripping was inconsistent. 

@@ -67,10 +67,6 @@ def ise_api():
             # Convert to Python Dict {} and append to xdoc []
             xdoc.append(xmltodict.parse(response.text.encode('utf8')))
 
-        if SESSION_TK.debug == 2: # True
-            print('\n***DEBUG ISE GET Response:')
-            print(pp.pprint(xdoc))
-
         # Parse through XTVAL module to extract required values
         # ids = xtval(xdoc, '@id')
         hosts = xtval(xdoc, '@name')
@@ -80,7 +76,8 @@ def ise_api():
 
         for host in hosts:
             if any(iPAT in host for iPAT in SESSION_TK.ipattern) and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
-                ise_api_list.append(host)
+                partition = host.partition('.')
+                ise_api_list.append(partition[0])
 
         if SESSION_TK.debug >= 1:
             print('\n**DEBUG ISE Filtered List Generated:')

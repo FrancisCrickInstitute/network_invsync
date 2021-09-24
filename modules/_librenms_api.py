@@ -50,11 +50,17 @@ def librenms_api():
         xdict = json.loads(response.text)
 
         for item in xdict['devices']:
-            if item['type'] == 'network':
+            if item['type'] == 'network' or \
+                item['type'] == 'wireless' or \
+                item['type'] == 'firewall':
                 if any(iPAT in item['hostname'].upper() for iPAT in SESSION_TK.ipattern) \
                     and not any(xPAT in item['hostname'].upper() for xPAT in SESSION_TK.xpattern):
-                    stripped = item['hostname'].rstrip(str(SESSION_TK.dom_strip))
-                    librenms_api_list.append(stripped.upper())
+                    partition = item['hostname'].partition('.')
+                    librenms_api_list.append(partition[0].upper())
+
+        if SESSION_TK.debug == 2:
+            print('\n**DEBUG: LibreNMS Filtered List Generated:')
+            print(pp.pprint(librenms_api_list))
 
         librenms_api_log.append(('%modules/_librenms_api', 'librenms API Successful', 5))
         librenms_api_status = True

@@ -56,10 +56,6 @@ def netdisco_api():
                     headers={'Accept': 'application/json',
                    'Authorization': api_key_post.json()['api_key'] })
 
-        if SESSION_TK.debug == 2:
-            print('\n**DEBUG (modules/netdisco_api_api.py) : Netdisco API Device By Location Response: ')
-            print(json.dumps(api_get_devices.json(), indent=2))
-
         # Generate Host List
         xlist = []
 
@@ -67,9 +63,10 @@ def netdisco_api():
             xlist.append(host['name'])
 
         for host in xlist:
-            if any(iPAT in host for iPAT in SESSION_TK.ipattern) and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
-                for strip in SESSION_TK.dom_strip:
-                    netdisco_api_list.append(host.strip(strip))
+            if any(iPAT in host for iPAT in SESSION_TK.ipattern) \
+            and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
+                partition = host.partition('.')
+                netdisco_api_list.append(partition[0])
 
         if SESSION_TK.debug == 2:
             print('\n**DEBUG: NetDisco Filtered List Generated:')
