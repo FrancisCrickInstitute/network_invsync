@@ -53,11 +53,18 @@ def librenms_api():
             if item['type'] == 'network' or \
                 item['type'] == 'wireless' or \
                 item['type'] == 'firewall':
-                if any(iPAT in item['hostname'].upper() for iPAT in SESSION_TK.ipattern) \
+                if any(fPAT in item['hostname'].upper() for fPAT in SESSION_TK.fpattern): # FORCE Pattern
+                    partition = host['hostname'].partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
+                    librenms_api_list.append(partition[0].upper()) # Only capture hostname from partition.
+
+                elif any(iPAT in item['hostname'].upper() for iPAT in SESSION_TK.ipattern) \
                     and not any(xPAT in item['hostname'].upper() for xPAT in SESSION_TK.xpattern):
                     partition = item['hostname'].partition('.')
                     librenms_api_list.append(partition[0].upper())
 
+                else:
+                    pass
+                    
         if SESSION_TK.debug == 2:
             print('\n**DEBUG: LibreNMS Filtered List Generated:')
             print(pp.pprint(librenms_api_list))

@@ -50,6 +50,7 @@ $
 {
     "IPATTERN": ["ROUTER-A","ROUTER-B","SWITCH-C"],
     "XPATTERN": ["ROUTER-X","ROUTER-Y","SWITCH-Z"],
+    "FPATTERN": ["ROUTER-Q"],
     "DOM_STRIP": ["mycompany.mydomain"]
     "YAML_FILTERFILTER": ["YAML Group/ Host"],
     "SLACK_POST": {0 = No slack Post, 1 = Slack Post},
@@ -58,8 +59,9 @@ $
 ```
 
 ... where:<br />
-*IPATTERN* is the a pattern to include (i.e. ["A", "B", "C"] will match Router-A, Router-B, Router-C) and add to the list to be DIFF'ed.<br />
-*XPATTERN* is the a pattern to exclude (i.e. ["X", "Y", "Z"] will match Router-X, Router-Y, Router-Z) and NOT add to the list to be DIFF'ed.<br />
+*IPATTERN* defines a pattern(s) to include (i.e. ["A", "B", "C"] will match Router-A, Router-B, Router-C) and add to the list to be DIFF'ed.<br />
+*XPATTERN* defines pattern(s) to exclude (i.e. ["X", "Y", "Z"] will match Router-X, Router-Y, Router-Z) and NOT add to the list to be DIFF'ed.<br />
+*FPATTERN* defines pattern(s) to force a host which matches the pattern to be added to the list. This is to circumvent circumstances where we want the host to be included if the hostname matches both the I and XPATTERN<br />
 *DOM_STRIP* is any domain suffix to strip from hostnames pulled from ISE or NetDisco to maintain parity with Nornir YAML Inventory.<br />
 *YAML_FILTER* is the YAML filter used by NORNIR to filter the hosts.yaml [4]. <br />
 
@@ -203,4 +205,7 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 24.09.2021
 - Updated LibreNMS module so it matches on 'network', 'firewall' and 'wireless' device type, not just 'network'.
-- Updated LibreNMS, NetDisco and ISE module so hostname is partitioned into component parts hostname.company.domain any only capture hostname. Using domain stripping was inconsistent. 
+- Updated LibreNMS, NetDisco and ISE module so hostname is partitioned into component parts hostname.company.domain any only capture hostname. Using domain stripping was inconsistent.
+
+### Version 10.02.2022
+- Added F(orce)PATTERN to SESSION_TK to force a host which matches the pattern to be added to the list. This is to circumvent circumstances where we want the host to be included if elemtns of the hostname matches both the I and XPATTERN. Updated modules/_*.py and common/_session_tk accordingly. 

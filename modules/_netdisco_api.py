@@ -63,10 +63,17 @@ def netdisco_api():
             xlist.append(host['name'])
 
         for host in xlist:
-            if any(iPAT in host for iPAT in SESSION_TK.ipattern) \
-            and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
+            if any(fPAT in host for fPAT in SESSION_TK.fpattern): # FORCE Pattern
+                partition = host.partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
+                netdisco_api_list.append(partition[0].upper()) # Only capture hostname from partition.
+
+            elif any(iPAT in host for iPAT in SESSION_TK.ipattern) \
+                and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
                 partition = host.partition('.')
-                netdisco_api_list.append(partition[0])
+                netdisco_api_list.append(partition[0].upper())
+
+            else:
+                pass
 
         if SESSION_TK.debug == 2:
             print('\n**DEBUG: NetDisco Filtered List Generated:')

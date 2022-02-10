@@ -61,6 +61,7 @@ class Session_tk:
             self.dom_strip = app_cfg['DOM_STRIP']
             self.ipattern = app_cfg['IPATTERN']
             self.xpattern = app_cfg['XPATTERN']
+            self.fpattern = app_cfg['FPATTERN']
 
             self.log.append(('%common/_session_tk', 'Session Token App Config Successful', 5))
 

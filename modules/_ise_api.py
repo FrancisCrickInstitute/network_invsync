@@ -75,9 +75,17 @@ def ise_api():
         # to ise_api_list []
 
         for host in hosts:
-            if any(iPAT in host for iPAT in SESSION_TK.ipattern) and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
-                partition = host.partition('.')
-                ise_api_list.append(partition[0])
+            if any(fPAT in host for fPAT in SESSION_TK.fpattern): # FORCE Pattern
+                partition = host.partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
+                ise_api_list.append(partition[0].upper()) # Only capture hostname from partition.
+
+            elif any(iPAT in host for iPAT in SESSION_TK.ipattern) \
+                and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
+                partition = host.partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
+                ise_api_list.append(partition[0].upper()) # Only capture hostname from partition.
+
+            else:
+                pass
 
         if SESSION_TK.debug >= 1:
             print('\n**DEBUG ISE Filtered List Generated:')
