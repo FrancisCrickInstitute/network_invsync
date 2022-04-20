@@ -53,9 +53,14 @@ def librenms_api():
             if item['type'] == 'network' or \
                 item['type'] == 'wireless' or \
                 item['type'] == 'firewall':
-                if any(fPAT in item['hostname'].upper() for fPAT in SESSION_TK.fpattern): # FORCE Pattern
-                    partition = host['hostname'].partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
-                    librenms_api_list.append(partition[0].upper()) # Only capture hostname from partition.
+                # F(ORCE)PATTERN forces the pattern to be excluded. Handles instances
+                # where the hostname matches both a I(NCLUDE)PATTERN and eX(CLUDE)PATTERN
+                # e.g. DEV is excluded but PFW is included but we have DEV-PFW which we
+                # want to force exclude.
+                if any(fPAT in item['hostname'].upper() for fPAT in SESSION_TK.fpattern):
+                    #partition = host['hostname'].partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
+                    #librenms_api_list.append(partition[0].upper()) # Only capture hostname from partition.
+                    pass
 
                 elif any(iPAT in item['hostname'].upper() for iPAT in SESSION_TK.ipattern) \
                     and not any(xPAT in item['hostname'].upper() for xPAT in SESSION_TK.xpattern):
@@ -64,7 +69,7 @@ def librenms_api():
 
                 else:
                     pass
-                    
+
         if SESSION_TK.debug == 2:
             print('\n**DEBUG: LibreNMS Filtered List Generated:')
             print(pp.pprint(librenms_api_list))

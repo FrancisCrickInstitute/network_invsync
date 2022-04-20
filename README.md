@@ -208,4 +208,7 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 - Updated LibreNMS, NetDisco and ISE module so hostname is partitioned into component parts hostname.company.domain any only capture hostname. Using domain stripping was inconsistent.
 
 ### Version 10.02.2022
-- Added F(orce)PATTERN to SESSION_TK to force a host which matches the pattern to be added to the list. This is to circumvent circumstances where we want the host to be included if elemtns of the hostname matches both the I and XPATTERN. Updated modules/_*.py and common/_session_tk accordingly. 
+- Added F(orce)PATTERN to SESSION_TK to force a host which matches the pattern to be added to the list. This is to circumvent circumstances where we want the host to be included if elements of the hostname matches both the I and XPATTERN. Updated modules/_*.py and common/_session_tk accordingly.
+
+### Version 20.04.2022
+- Changed F(orce)PATTERN to force exclude (not include) a hostname which matches the pattern.

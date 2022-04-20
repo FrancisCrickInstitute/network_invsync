@@ -139,7 +139,7 @@ def main():
 
 
         if not idiff and not ydiff and not ndiff and not ldiff:
-            MASTER_LOG.append(('%invsync','\n' + u'\u2714' + ' No Difference Found Between Inventories', 4))
+            MASTER_LOG.append(('%invsync','\n' + u' \u2705' + ' Inventories In Sync', 4))
 
         break
 

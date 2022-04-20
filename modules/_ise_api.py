@@ -75,9 +75,14 @@ def ise_api():
         # to ise_api_list []
 
         for host in hosts:
-            if any(fPAT in host for fPAT in SESSION_TK.fpattern): # FORCE Pattern
-                partition = host.partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
-                ise_api_list.append(partition[0].upper()) # Only capture hostname from partition.
+            # F(ORCE)PATTERN forces the pattern to be excluded. Handles instances
+            # where the hostname matches both a I(NCLUDE)PATTERN and eX(CLUDE)PATTERN
+            # e.g. DEV is excluded but PFW is included but we have DEV-PFW which we
+            # want to force exclude.
+            if any(fPAT in host for fPAT in SESSION_TK.fpattern):
+                #partition = host.partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
+                #ise_api_list.append(partition[0].upper()) # Only capture hostname from partition.
+                pass
 
             elif any(iPAT in host for iPAT in SESSION_TK.ipattern) \
                 and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
