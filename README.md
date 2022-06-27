@@ -212,3 +212,6 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 20.04.2022
 - Changed F(orce)PATTERN to force exclude (not include) a hostname which matches the pattern.
+
+### Version 27.06.2022
+- Updated common/_session_tk.py to reflect multiple Slack Channel structure in Network Vault. Namely, selecting to post to the Info channel.

@@ -37,7 +37,7 @@ class Session_tk:
             self.librenms_url = network_vault['LIBRENMS_URL']
             self.librenms_xauth_token = network_vault['LIBRENMS_XAUTH_TOKEN']
             self.slack_oauth_token = network_vault['SLACK_OAUTH_TOKEN']
-            self.slack_channel = network_vault['SLACK_CHANNEL']
+            self.slack_channel = network_vault['SLACK_CHANNEL_INFO']
 
             self.log.append(('%common/_session_tk', 'Session Token Vault Successful', 5))
 
