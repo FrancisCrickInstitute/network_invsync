@@ -215,3 +215,6 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 27.06.2022
 - Updated common/_session_tk.py to reflect multiple Slack Channel structure in Network Vault. Namely, selecting to post to the Info channel.
+
+### Version 03.10.2022
+Added HTTPS requirement to _netdisco_api.py

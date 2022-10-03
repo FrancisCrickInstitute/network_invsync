@@ -28,7 +28,7 @@ def netdisco_api():
 
     try:
         #Get API KEY with POST request . Valid for 3600 seconds
-        api_key_post = requests.post('http://' + str(SESSION_TK.netdisco_url) + '/login',
+        api_key_post = requests.post('https://' + str(SESSION_TK.netdisco_url) + '/login',
                   auth=(SESSION_TK.netdisco_username, SESSION_TK.netdisco_password),
                   headers={'Accept': 'application/json'})
 
