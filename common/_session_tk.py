@@ -17,58 +17,85 @@ class Session_tk:
         self.status = False
         self.log = []
 
-        try:
+        while True:
+            # ...
+            # App Config
+            try:
+                self.log.append(('%common/_session_tk', 'Session Token App Config Initialised...', 5))
+
+                app_cfg_f = 'config/app_cfg.json'
+
+                with open(app_cfg_f) as app_cfg_f:
+                    app_cfg = json.load(app_cfg_f)
+
+                self.slack_post = app_cfg['SLACK_POST']
+                self.debug = app_cfg['DEBUG']
+                self.yaml_filter = app_cfg['YAML_FILTER']
+                self.dom_strip = app_cfg['DOM_STRIP']
+                self.ipattern = app_cfg['IPATTERN']
+                self.xpattern = app_cfg['XPATTERN']
+                self.fpattern = app_cfg['FPATTERN']
+
+                self.log.append(('%common/_session_tk', 'Session Token App Config Successful', 5))
+
+            except Exception as error:
+                self.log.append(('%common/_session_tk', 'Session Token App Config Error: ' + str(error), 4))
+                self.log.append(('%common/_session_tk', 'Session Token App Config Error: Check Variables Exist!' , 4))
 
             # ...
             # Vault
-            self.log.append(('%common/_session_tk','Session Token Vault Initialised...', 5))
+            try:
 
-            network_vault_f = '../network_config/network_vault.json'
+                self.log.append(('%common/_session_tk', 'Session Token Vault Initialised...', 6))
 
-            with open(network_vault_f) as network_vault_f:
-                network_vault = json.load(network_vault_f)
+                try:
+                    hashBy = os.environ['NET_HASH'].encode()
+                    self.log.append(('%common/_session_tk', 'Session Token HASH Envriomental Variable Found...', 6))
+                except Exception as error:
+                    self.log.append(('%common/_session_tk', 'Session Token HASH Environmental Variable Not Found!!!', 3))
+                    self.log.append(('%common/_session_tk', "os.environ['NET_HASH'] Not Found!!! Use 'export NET_HASH={Password on Celo}", 3))
+                    break 
+                
+                try:
+                    network_vaultx_f = '../network_config/network_vaultx.json' # Fernet (Symmetric Encryption) File
+                    with open (network_vaultx_f, 'rb') as file: # Read Binary
+                        encryptF = file.read()
+                except Exception as error:
+                    self.log.append(('%common/_session_tk', 'Session Token Vault Open Error: ' + str(error), 3))
+                    break
+                
+                # Create Fernet Object using HASH
+                f = Fernet(hashBy)
+                # <cryptography.fernet.Fernet object at 0x104fc0490>
 
-            self.netdisco_username = network_vault['NETDISCO_USERNAME']
-            self.netdisco_password = network_vault['NETDISCO_PASSWORD']
-            self.netdisco_url = network_vault['NETDISCO_URL']
-            self.ise_url = network_vault['ISE_URL']
-            self.ise_pages = network_vault['ISE_PAGES']
-            self.ise_oauth_token = network_vault['ISE_OAUTH_TOKEN']
-            self.librenms_url = network_vault['LIBRENMS_URL']
-            self.librenms_xauth_token = network_vault['LIBRENMS_XAUTH_TOKEN']
-            self.slack_oauth_token = network_vault['SLACK_OAUTH_TOKEN']
-            self.slack_channel = network_vault['SLACK_CHANNEL_INFO']
+                # Decrypt File
+                decryptF = f.decrypt(encryptF)
 
-            self.log.append(('%common/_session_tk', 'Session Token Vault Successful', 5))
+                # Convert Binary to ASCII Object
+                decodeA = decryptF.decode()
 
-        except Exception as error:
-            self.log.append(('%common/_session_tk', 'Session Token Vault Error: ' + str(error), 4))
-            self.log.append(('%common/_session_tk', 'Session Token Vault Error: Check Variables Exist!' , 4))
+                # Convert ASCII to Dictionary Object usinf ATS
+                decodeD = ast.literal_eval(decodeA)
 
-        try:
-            # ...
-            # App Config
-            self.log.append(('%common/_session_tk', 'Session Token App Config Initialised...', 5))
+                self.netdisco_username = decodeD['NETDISCO_USERNAME']
+                self.netdisco_password = decodeD['NETDISCO_PASSWORD']
+                self.netdisco_url = decodeD['NETDISCO_URL']
+                self.ise_url = decodeD['ISE_URL']
+                self.ise_pages = decodeD['ISE_PAGES']
+                self.ise_oauth_token = decodeD['ISE_OAUTH_TOKEN']
+                self.librenms_url = decodeD['LIBRENMS_URL']
+                self.librenms_xauth_token = decodeD['LIBRENMS_XAUTH_TOKEN']
+                self.slack_oauth_token = decodeD['SLACK_OAUTH_TOKEN']
+                self.slack_channel = decodeD['SLACK_CHANNEL_INFO']
 
-            app_cfg_f = 'config/app_cfg.json'
+                self.log.append(('%common/_session_tk', 'Session Token Vault Successful', 6))
 
-            with open(app_cfg_f) as app_cfg_f:
-                app_cfg = json.load(app_cfg_f)
-
-            self.slack_post = app_cfg['SLACK_POST']
-            self.debug = app_cfg['DEBUG']
-            self.yaml_filter = app_cfg['YAML_FILTER']
-            self.dom_strip = app_cfg['DOM_STRIP']
-            self.ipattern = app_cfg['IPATTERN']
-            self.xpattern = app_cfg['XPATTERN']
-            self.fpattern = app_cfg['FPATTERN']
-
-            self.log.append(('%common/_session_tk', 'Session Token App Config Successful', 5))
+            except Exception as error:
+                self.log.append(('%common/_session_tk', 'Session Token Vault Error: ' + str(error), 4))
+                self.log.append(('%common/_session_tk', 'Session Token Vault Error: Check Variables Exist!' , 4))
+                break 
 
             # ...
             # OK
             self.status = True
-
-        except Exception as error:
-            self.log.append(('%common/_session_tk', 'Session Token App Config Error: ' + str(error), 4))
-            self.log.append(('%common/_session_tk', 'Session Token App Config Error: Check Variables Exist!' , 4))
+            break

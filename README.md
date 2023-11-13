@@ -218,3 +218,6 @@ b'dXNlcm5hbWU6cGFzc3dvcmQ='
 
 ### Version 03.10.2022
 Added HTTPS requirement to _netdisco_api.py
+
+### Version 13.11.2023 
+- Updated common/_session_tk.py to use a Fernet Encrypted ../network_config/network_vault.json. 
