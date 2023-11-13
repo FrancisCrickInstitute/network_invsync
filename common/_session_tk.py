@@ -8,8 +8,13 @@ RTN: None
 __author__ = 'Paul Mahan, Francis Crick Institute, London UK'
 __copyright__ = 'None. Enjoy :-)'
 
+from cryptography.fernet import Fernet
+import os # Required for Environmental variables
+import ast # Required to convert ASCII to Dictionary
 import json # Required to Read Configuration File
 import base64 # Required to generate ServiceNow Basic Auth string
+import pprint # Required to Pretty Print
+pp = pprint.PrettyPrinter(indent=4)
 import ipdb # Optional Debug. ipdb.set_trace()
 
 class Session_tk:
