@@ -221,3 +221,6 @@ Added HTTPS requirement to _netdisco_api.py
 
 ### Version 13.11.2023 
 - Updated common/_session_tk.py to use a Fernet Encrypted ../network_config/network_vault.json. 
+
+### Version 21.02.2024
+- Updated modules/_librenms_api.py to capture and ignore exceptions where hostname is 'None'. 

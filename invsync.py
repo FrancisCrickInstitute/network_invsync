@@ -118,28 +118,28 @@ def main():
         MASTER_LOG.append(('%invsync','*** RESULTS ***', 5))
 
         if idiff:
-            MASTER_LOG.append(('%invsync','\n' + u'\u2717' + ' Missing from ISE Inventory ' + u'\u2717', 4))
+            MASTER_LOG.append(('%invsync', u'\u2717' + ' Missing from ISE Inventory ' + u'\u2717', 4))
         for i in idiff:
             MASTER_LOG.append(('%invsync',i, 4))
 
         if ydiff:
-            MASTER_LOG.append(('%invsync','\n' + u'\u2717' + ' Missing from YAML Inventory ' + u'\u2717', 4))
+            MASTER_LOG.append(('%invsync', u'\u2717' + ' Missing from YAML Inventory ' + u'\u2717', 4))
         for y in ydiff:
             MASTER_LOG.append(('%invsync',y, 4))
 
         if ndiff:
-            MASTER_LOG.append(('%invsync','\n' + u'\u2717' + ' Missing from NetDisco Inventory ' + u'\u2717', 4))
+            MASTER_LOG.append(('%invsync', u'\u2717' + ' Missing from NetDisco Inventory ' + u'\u2717', 4))
         for n in ndiff:
             MASTER_LOG.append(('%invsync',n, 4))
 
         if ldiff:
-            MASTER_LOG.append(('%invsync','\n' + u'\u2717' + ' Missing from LibreNMS Inventory ' + u'\u2717', 4))
+            MASTER_LOG.append(('%invsync', u'\u2717' + ' Missing from LibreNMS Inventory ' + u'\u2717', 4))
         for n in ldiff:
             MASTER_LOG.append(('%invsync',n, 4))
 
 
         if not idiff and not ydiff and not ndiff and not ldiff:
-            MASTER_LOG.append(('%invsync','\n' + u' \u2705' + ' Inventories In Sync', 4))
+            MASTER_LOG.append(('%invsync', u'\u2705' + ' Inventories In Sync ' + u'\u2705', 4))
 
         break
 
