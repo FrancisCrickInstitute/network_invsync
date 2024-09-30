@@ -224,3 +224,6 @@ Added HTTPS requirement to _netdisco_api.py
 
 ### Version 21.02.2024
 - Updated modules/_librenms_api.py to capture and ignore exceptions where hostname is 'None'. 
+
+### Version 30.09.2024 
+- Removed Cisco ISE inventory check. 

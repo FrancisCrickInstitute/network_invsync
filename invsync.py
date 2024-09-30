@@ -18,7 +18,7 @@ import ipdb # Optional Debug. ipdb.set_trace()
 
 # Import custom modules
 from modules._diffgen import diffgen
-from modules._ise_api import ise_api
+#from modules._ise_api import ise_api
 from modules._netdisco_api import netdisco_api
 from modules._librenms_api import librenms_api
 from modules._nornir_yml import nornir_yml
@@ -65,7 +65,9 @@ def main():
         if not nornir_yml_status: # False
             break
 
+       
         # ISE API Query
+        '''
         ise_api_status, ise_api_log, ise_api_list = ise_api()
 
         for line in ise_api_log:
@@ -73,6 +75,7 @@ def main():
 
         if not ise_api_status: # False
             break
+        '''
 
         # NetDisco API Query
         netdisco_api_status, netdisco_api_log, netdisco_api_list = netdisco_api()
@@ -98,8 +101,8 @@ def main():
         for y in nornir_yml_list:
             xdict[y] = ''
 
-        for i in ise_api_list:
-            xdict[i] = ''
+        #for i in ise_api_list:
+        #    xdict[i] = ''
 
         for n in netdisco_api_list:
             xdict[n] = ''
@@ -111,16 +114,18 @@ def main():
 
         # Call diffgen Module
         ydiff = diffgen(nornir_yml_list, xdict)
-        idiff = diffgen(ise_api_list, xdict)
+        #idiff = diffgen(ise_api_list, xdict)
         ndiff = diffgen(netdisco_api_list, xdict)
         ldiff = diffgen(librenms_api_list, xdict)
 
         MASTER_LOG.append(('%invsync','*** RESULTS ***', 5))
 
+        '''
         if idiff:
             MASTER_LOG.append(('%invsync', u'\u2717' + ' Missing from ISE Inventory ' + u'\u2717', 4))
         for i in idiff:
             MASTER_LOG.append(('%invsync',i, 4))
+        '''
 
         if ydiff:
             MASTER_LOG.append(('%invsync', u'\u2717' + ' Missing from YAML Inventory ' + u'\u2717', 4))
@@ -138,7 +143,8 @@ def main():
             MASTER_LOG.append(('%invsync',n, 4))
 
 
-        if not idiff and not ydiff and not ndiff and not ldiff:
+        #if not idiff and not ydiff and not ndiff and not ldiff:
+        if not ydiff and not ndiff and not ldiff:
             MASTER_LOG.append(('%invsync', u'\u2705' + ' Inventories In Sync ' + u'\u2705', 4))
 
         break
