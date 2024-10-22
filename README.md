@@ -227,3 +227,6 @@ Added HTTPS requirement to _netdisco_api.py
 
 ### Version 30.09.2024 
 - Removed Cisco ISE inventory check. 
+
+### Version 22.10.2024 
+- Modified modules/_netdisco_api.py to support both HTTPS and HTTP methods. 

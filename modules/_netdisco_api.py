@@ -26,24 +26,37 @@ def netdisco_api():
 
     netdisco_api_log.append(('%modules/_netdisco_api', 'NetDisco API Query Initialised...', 5))
 
-    try:
-        #Get API KEY with POST request . Valid for 3600 seconds
-        api_key_post = requests.post('https://' + str(SESSION_TK.netdisco_url) + '/login',
-                  auth=(SESSION_TK.netdisco_username, SESSION_TK.netdisco_password),
-                  headers={'Accept': 'application/json'})
-
-        if SESSION_TK.debug == 2:
-            print('\n**DEBUG (modules/netdisco_api_api.py) : Netdisco API Session Key: ')
-            print(api_key_post.json()['api_key'])
-
-        api_get_devices = requests.get('http://' + str(SESSION_TK.netdisco_url) + '/api/v1/report/device/devicebylocation',
+    while True:
+        try:
+            # HTTPS Method
+            api_key_post = requests.post('https://' + str(SESSION_TK.netdisco_url) + '/login',
+                auth=(SESSION_TK.netdisco_username, SESSION_TK.netdisco_password),
+                headers={'Accept': 'application/json'}, verify=False)
+            api_get_devices = requests.get('https://' + str(SESSION_TK.netdisco_url) + '/api/v1/report/device/devicebylocation',
+                headers={'Accept': 'application/json',
+               'Authorization': api_key_post.json()['api_key'] })       
+            netdisco_api_log.append(('%modules/_netdisco_api','NetDisco API HTTPS Method Used.', 5))
+        
+        except requests.exceptions.SSLError as error: 
+            # HTTP Method
+            api_key_post = requests.post('http://' + str(SESSION_TK.netdisco_url) + '/login',
+                auth=(SESSION_TK.netdisco_username, SESSION_TK.netdisco_password),
+                headers={'Accept': 'application/json'})
+            api_get_devices = requests.get('http://' + str(SESSION_TK.netdisco_url) + '/api/v1/report/device/devicebylocation',
                 headers={'Accept': 'application/json',
                'Authorization': api_key_post.json()['api_key'] })
+            netdisco_api_log.append(('%modules/_netdisco_api','NetDisco API HTTP Method Used.', 5))
+            
+        except Exception as error:
+            netdisco_api_log.append(('%modules/_netdisco_api','NetDisco API Methods Not Supported: ' + str(error), 3))
+            break
 
         if SESSION_TK.debug == 2:
             print('\n**DEBUG (modules/netdisco_api_api.py) : Netdisco API POST Key Response: ')
+            print(api_key_post.json()['api_key'])
             print(json.dumps(api_key_post.json(), indent=2))
 
+        '''   
         # Curiosity with NetDisco and occasional polling where it returns 401. Retry
         # but with delay
 
@@ -55,6 +68,7 @@ def netdisco_api():
             api_get_devices = requests.get('http://' + str(SESSION_TK.netdisco_url) + '/api/v1/report/device/devicebylocation',
                     headers={'Accept': 'application/json',
                    'Authorization': api_key_post.json()['api_key'] })
+        '''
 
         # Generate Host List
         xlist = []
@@ -90,9 +104,10 @@ def netdisco_api():
 
         netdisco_api_log.append(('%modules/_netdisco_api','NetDisco API Query Successful', 5))
         netdisco_api_status = True
+        break 
 
-    except Exception as error:
-        netdisco_api_log.append(('%modules/_netdisco_api','NetDisco API Error: ' + str(error) + \
-            ". API error occasionally occurs for no reason. NetDisco inventory check skipped in this run. Re-run recommended!", 4))
+    #except Exception as error:
+    #    netdisco_api_log.append(('%modules/_netdisco_api','NetDisco API Error: ' + str(error) + \
+    #        ". API error occasionally occurs for no reason. NetDisco inventory check skipped in this run. Re-run recommended!", 4))
 
     return netdisco_api_status, netdisco_api_log, netdisco_api_list
