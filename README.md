@@ -230,3 +230,6 @@ Added HTTPS requirement to _netdisco_api.py
 
 ### Version 22.10.2024 
 - Modified modules/_netdisco_api.py to support both HTTPS and HTTP methods. 
+
+### Version 03.12.2024
+- Disabled SSL verification for HTTPS NetDisco API method in modules/_netdisco_api.py. 

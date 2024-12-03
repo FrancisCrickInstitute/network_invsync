@@ -34,7 +34,7 @@ def netdisco_api():
                 headers={'Accept': 'application/json'}, verify=False)
             api_get_devices = requests.get('https://' + str(SESSION_TK.netdisco_url) + '/api/v1/report/device/devicebylocation',
                 headers={'Accept': 'application/json',
-               'Authorization': api_key_post.json()['api_key'] })       
+               'Authorization': api_key_post.json()['api_key'] }, verify=False)       
             netdisco_api_log.append(('%modules/_netdisco_api','NetDisco API HTTPS Method Used.', 5))
         
         except requests.exceptions.SSLError as error: 
