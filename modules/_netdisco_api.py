@@ -82,15 +82,15 @@ def netdisco_api():
             # e.g. DEV is excluded but PFW is included but we have DEV-PFW which we
             # want to force exclude.
             try:
-                if any(fPAT in host for fPAT in SESSION_TK.fpattern): # FORCE Pattern
+                if any(fPAT in host.upper() for fPAT in SESSION_TK.fpattern): # FORCE Pattern
                     #partition = host.partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
                     #netdisco_api_list.append(partition[0].upper()) # Only capture hostname from partition.
                     pass
 
-                elif any(iPAT in host for iPAT in SESSION_TK.ipattern) \
+                elif any(iPAT in host.upper() for iPAT in SESSION_TK.ipattern) \
                     and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
-                    partition = host.partition('.')
-                    netdisco_api_list.append(partition[0].upper())
+                    partition = host.partition('.') # Split any domain suffix...
+                    netdisco_api_list.append(partition[0].upper()) # and capture only the host name.
 
                 else:
                     pass

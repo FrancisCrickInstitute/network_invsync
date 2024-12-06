@@ -233,3 +233,6 @@ Added HTTPS requirement to _netdisco_api.py
 
 ### Version 03.12.2024
 - Disabled SSL verification for HTTPS NetDisco API method in modules/_netdisco_api.py. 
+
+### Version 06.12.2024 
+- Updated modules/_netdisco_api.py to ensure hostname is forced to host.upper(). 
