@@ -32,24 +32,25 @@ def nornir_yml():
     try:
         nr = InitNornir(config_file='config/nornir_cfg.yaml')
 
-        filter  = nr.filter(F(groups__contains=SESSION_TK.yaml_filter[0]))
-        for host in filter.inventory.hosts.keys():
-            # F(ORCE)PATTERN forces the pattern to be excluded. Handles instances
-            # where the hostname matches both a I(NCLUDE)PATTERN and eX(CLUDE)PATTERN
-            # e.g. DEV is excluded but PFW is included but we have DEV-PFW which we
-            # want to force exclude.
-            if any(fPAT in host.upper() for fPAT in SESSION_TK.fpattern):
-                #partition = host['hostname'].partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
-                #librenms_api_list.append(partition[0].upper()) # Only capture hostname from partition.
-                pass
-
-            elif any(iPAT in host for iPAT in SESSION_TK.ipattern) \
-                and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
-                nornir_yml_list.append(host)
-
-            else:
-                pass
-
+        for group in SESSION_TK.yaml_filter:
+            filter  = nr.filter(F(groups__contains=group))
+            for host in filter.inventory.hosts.keys():
+                # F(ORCE)PATTERN forces the pattern to be excluded. Handles instances
+                # where the hostname matches both a I(NCLUDE)PATTERN and eX(CLUDE)PATTERN
+                # e.g. DEV is excluded but PFW is included but we have DEV-PFW which we
+                # want to force exclude.
+                if any(fPAT in host.upper() for fPAT in SESSION_TK.fpattern):
+                    #partition = host['hostname'].partition('.') # Partition FQDN using '.' as seperator (host.company.domain)
+                    #librenms_api_list.append(partition[0].upper()) # Only capture hostname from partition.
+                    pass
+    
+                elif any(iPAT in host for iPAT in SESSION_TK.ipattern) \
+                    and not any(xPAT in host for xPAT in SESSION_TK.xpattern):
+                    nornir_yml_list.append(host)
+    
+                else:
+                    pass
+    
         if SESSION_TK.debug == 2: # True
             print('\n**DEBUG Nornir YAML List Generated:')
             print(pp.pprint(nornir_yml_list))

@@ -236,3 +236,6 @@ Added HTTPS requirement to _netdisco_api.py
 
 ### Version 06.12.2024 
 - Updated modules/_netdisco_api.py to ensure hostname is forced to host.upper(). 
+
+### Version 14.01.2025
+- Updated modules/_nornir_yml to handle multiple groups defined in the app_cfg.json YAML_FILTER group list. Previously only handling the first [0]. 
